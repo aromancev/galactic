@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://cqm8oyfq1raqh"]
+
+[ext_resource type="Script" path="res://navigation/galaxy.gd" id="1_n37x6"]
+[ext_resource type="Texture2D" uid="uid://x6s3hwb71a1b" path="res://navigation/galaxy.png" id="2_mjb1r"]
+
+[node name="Navigation" type="Node"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_mjb1r")
+
+[node name="Galaxy" type="Node2D" parent="."]
+script = ExtResource("1_n37x6")
+
+[node name="Camera2D" type="Camera2D" parent="."]
