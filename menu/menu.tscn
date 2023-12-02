@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://c6ippgm7mtsjk"]
+
+[ext_resource type="Script" path="res://menu/menu.gd" id="1_6tps0"]
+
+[node name="Menu" type="Control" node_paths=PackedStringArray("player_name", "join_address")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6tps0")
+player_name = NodePath("Create/VBoxContainer/Name")
+join_address = NodePath("Create/VBoxContainer/TabContainer/Join/Address")
+
+[node name="Create" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Create"]
+layout_mode = 2
+
+[node name="Name" type="LineEdit" parent="Create/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Name"
+
+[node name="TabContainer" type="TabContainer" parent="Create/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Create" type="VBoxContainer" parent="Create/VBoxContainer/TabContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="Create" type="Button" parent="Create/VBoxContainer/TabContainer/Create"]
+layout_mode = 2
+text = "Create"
+
+[node name="Join" type="VBoxContainer" parent="Create/VBoxContainer/TabContainer"]
+visible = false
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="Address" type="LineEdit" parent="Create/VBoxContainer/TabContainer/Join"]
+layout_mode = 2
+text = "localhost"
+placeholder_text = "Address"
+
+[node name="Join" type="Button" parent="Create/VBoxContainer/TabContainer/Join"]
+layout_mode = 2
+text = "Join"
+
+[connection signal="pressed" from="Create/VBoxContainer/TabContainer/Create/Create" to="." method="_on_create_pressed"]
+[connection signal="pressed" from="Create/VBoxContainer/TabContainer/Join/Join" to="." method="_on_join_pressed"]
