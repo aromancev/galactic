@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://unbw2y8pw8u1"]
+
+[ext_resource type="Script" path="res://game/game.gd" id="1_a2j11"]
+[ext_resource type="PackedScene" uid="uid://cqm8oyfq1raqh" path="res://game/navigation/navigation.tscn" id="3_5yvvk"]
+[ext_resource type="PackedScene" uid="uid://dogv3v00wtnhn" path="res://game/lobby/lobby.tscn" id="3_eqybb"]
+
+[node name="Game" type="Node" node_paths=PackedStringArray("lobby", "navigation")]
+script = ExtResource("1_a2j11")
+lobby = NodePath("UI/Lobby")
+navigation = NodePath("Navigation")
+
+[node name="Navigation" parent="." instance=ExtResource("3_5yvvk")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Lobby" parent="UI" instance=ExtResource("3_eqybb")]
+visible = false
+
+[node name="Chat" type="Button" parent="UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -54.0
+offset_right = -20.0
+offset_bottom = -23.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Chat"
+
+[connection signal="pressed" from="UI/Chat" to="." method="_on_chat_pressed"]

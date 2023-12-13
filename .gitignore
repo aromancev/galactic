@@ -16,3 +16,6 @@
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Exported files
+.export

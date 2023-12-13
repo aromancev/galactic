@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://xn3x3sqs4cx1"]
+
+[ext_resource type="Script" path="res://game/session/session.gd" id="1_y0fy4"]
+
+[node name="Session" type="Node"]
+script = ExtResource("1_y0fy4")

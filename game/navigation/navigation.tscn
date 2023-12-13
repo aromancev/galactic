@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://cqm8oyfq1raqh"]
+
+[ext_resource type="Texture2D" uid="uid://x6s3hwb71a1b" path="res://game/navigation/galaxy.png" id="1_5d1ir"]
+[ext_resource type="Script" path="res://game/navigation/navigation.gd" id="1_b51l2"]
+[ext_resource type="Script" path="res://game/navigation/galaxy.gd" id="2_sbhnl"]
+
+[node name="Navigation" type="Node" node_paths=PackedStringArray("galaxy")]
+script = ExtResource("1_b51l2")
+galaxy = NodePath("Galaxy")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.737255, 0.737255, 0.737255, 1)
+texture = ExtResource("1_5d1ir")
+
+[node name="Galaxy" type="Node2D" parent="."]
+script = ExtResource("2_sbhnl")
+
+[node name="Camera2D" type="Camera2D" parent="."]

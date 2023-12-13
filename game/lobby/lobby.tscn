@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3 uid="uid://dogv3v00wtnhn"]
+
+[ext_resource type="Script" path="res://game/lobby/lobby.gd" id="1_u53lv"]
+
+[node name="Lobby" type="Control" node_paths=PackedStringArray("player_list", "messages", "messages_scroll", "input")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+script = ExtResource("1_u53lv")
+player_list = NodePath("CenterContainer/HBoxContainer/PlayersPanel/PlayerList")
+messages = NodePath("CenterContainer/HBoxContainer/ChatPanel/Chat/ScrollContainer/Messages")
+messages_scroll = NodePath("CenterContainer/HBoxContainer/ChatPanel/Chat/ScrollContainer")
+input = NodePath("CenterContainer/HBoxContainer/ChatPanel/Chat/Input")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="ChatPanel" type="PanelContainer" parent="CenterContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Chat" type="VBoxContainer" parent="CenterContainer/HBoxContainer/ChatPanel"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CenterContainer/HBoxContainer/ChatPanel/Chat"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+
+[node name="Messages" type="VBoxContainer" parent="CenterContainer/HBoxContainer/ChatPanel/Chat/ScrollContainer"]
+layout_mode = 2
+
+[node name="Input" type="TextEdit" parent="CenterContainer/HBoxContainer/ChatPanel/Chat"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+placeholder_text = "Message"
+
+[node name="PlayersPanel" type="PanelContainer" parent="CenterContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerList" type="VBoxContainer" parent="CenterContainer/HBoxContainer/PlayersPanel"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
