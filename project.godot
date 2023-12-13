@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Saver="*res://game/saver/saver.gd"
 Session="*res://game/session/session.gd"
 
 [display]

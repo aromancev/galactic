@@ -4,8 +4,6 @@
 class_name Galaxy
 extends Node2D
 
-const cell_scene := preload("galaxy_cell.tscn")
-
 # Radius in which the galaxy will be drawn.
 @export_range(100, 1000)
 var draw_radius := 300
@@ -14,63 +12,77 @@ var draw_radius := 300
 @export_range(1, 100)
 var radius := 3
 
+const cell_scene := preload("galaxy_cell.tscn")
+
 # Determines how far from the center a node inside a cell can "wiggle". Should be from 0 to 1.
 const cell_jitter_min := 0.4
-const cell_jitter_max := 0.6
+const cell_jitter_max := 0.7
 
 var cell_radius := float(draw_radius) / radius / 2
 var cells: Dictionary = {}
-var current_cell: GalaxyCell
 var destination_cell: GalaxyCell
-var seed_base: int = 0
-var model := Model.new()
-
-class Model:
-    var rand_state: int
+var _rand_state: int
+var _current_axial: Vector2i
 
 func generate():
-    model = Model.new()
-    model.rand_state = RandomNumberGenerator.new().state
-    _update.rpc(inst_to_dict(model))
+    _rand_state = RandomNumberGenerator.new().state
+    _set_model.rpc(_get_model())
 
 func _ready():
-    Session.player_connected.connect(_on_player_connected)
+    add_to_group(Replicator.GROUP)
 
-func _draw():
-    if not current_cell:
-        return
-    
-    for n in current_cell.neighbors:
-        draw_dashed_line(current_cell.node_position, n.node_position, Color.WHITE)
+func _get_model() -> PackedByteArray:
+    var p := BinaryPayload.new()
+    p.set_var(1, _rand_state)
+    p.set_var(2, _current_axial)
+    return p.encode()
 
-func _on_player_connected(peer_id, _player):
-    if multiplayer.is_server():
-        _update.rpc_id(peer_id, inst_to_dict(model))
-
-# Idempotent, so can be called multiple time to re-generate.
 @rpc("authority", "call_local", "reliable")
-func _update(p_model: Dictionary):
-    model = dict_to_inst(p_model) as Model
+func _set_model(model: PackedByteArray):
+    var p := BinaryPayload.decoded(model)
+    
+    _rand_state = p.get_var(1)
+    _current_axial = p.get_var(2)
 
     var rand := RandomNumberGenerator.new()
-    rand.state = model.rand_state
-
+    rand.state = _rand_state 
     _generate_cells(rand)
-    _set_current_cell(Vector2i())
+    _set_current_cell(_current_axial)
+
+func _draw():
+    var current := cells.get(_current_axial) as GalaxyCell
+    if !current:
+        return
+    
+    for n in current.neighbors:
+        draw_dashed_line(current.node_position, n.node_position, Color.WHITE)
 
 @rpc("any_peer", "call_local", "reliable")
-func _set_current_cell(axial: Vector2i):
-    var cell := cells[axial] as GalaxyCell
-    if not cell:
+func _move_to_cell(axial: Vector2i) -> void:
+    var current := cells.get(_current_axial) as GalaxyCell
+    var target := cells.get(axial) as GalaxyCell
+    if !current or !target:
         return
 
-    if current_cell:
-        current_cell.is_selected = false
-    cell.is_selected = true
-    current_cell = cell
+    if target not in current.neighbors:
+        return
+
+    _set_current_cell(axial)
+
+func _set_current_cell(axial: Vector2i) -> void:
+    var target := cells.get(axial, null) as GalaxyCell
+    if !target:
+        return
+    
+    var current := cells.get(_current_axial) as GalaxyCell
+    if current:
+        current.is_selected = false
+
+    target.is_selected = true
+    _current_axial = axial
     queue_redraw()
 
-    if multiplayer.is_server() and cell == destination_cell:
+    if target == destination_cell:
         generate()
 
 func _generate_cells(rand: RandomNumberGenerator):
@@ -81,12 +93,13 @@ func _generate_cells(rand: RandomNumberGenerator):
     var key: Vector2i = cells.keys()[rand.randi_range(0, cells.size()-1)]
     destination_cell = cells[key]
     destination_cell.is_destination = true
-    
+
 func _on_cell_selected(cell: GalaxyCell, axial: Vector2i):
-    if not current_cell or cell not in current_cell.neighbors:
+    var current := cells.get(_current_axial) as GalaxyCell
+    if not current or cell not in current.neighbors:
         return
 
-    _set_current_cell.rpc(axial)
+    _move_to_cell.rpc(axial)
 
 # Recursive.
 # https://www.redblobgames.com/grids/hexagons/#coordinates-axial
@@ -140,7 +153,6 @@ func _clear_cells():
         c.queue_free()
     
     cells.clear()
-    current_cell = null
 
 func _axial_distance(a: Vector2i, b: Vector2i) -> int:
     # Magic formula to calculate axial distance.

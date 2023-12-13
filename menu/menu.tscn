@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://menu/menu.gd" id="1_6tps0"]
 
-[node name="Menu" type="Control" node_paths=PackedStringArray("player_name", "join_address")]
+[node name="Menu" type="Control" node_paths=PackedStringArray("player_name", "join_address", "load_latest_btn")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,6 +12,7 @@ grow_vertical = 2
 script = ExtResource("1_6tps0")
 player_name = NodePath("Create/VBoxContainer/Name")
 join_address = NodePath("Create/VBoxContainer/TabContainer/Join/Address")
+load_latest_btn = NodePath("Create/VBoxContainer/TabContainer/Create/LoadLatest")
 
 [node name="Create" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -41,6 +42,11 @@ layout_mode = 2
 layout_mode = 2
 text = "Create"
 
+[node name="LoadLatest" type="Button" parent="Create/VBoxContainer/TabContainer/Create"]
+visible = false
+layout_mode = 2
+text = "Continue"
+
 [node name="Join" type="VBoxContainer" parent="Create/VBoxContainer/TabContainer"]
 visible = false
 custom_minimum_size = Vector2(300, 0)
@@ -56,4 +62,5 @@ layout_mode = 2
 text = "Join"
 
 [connection signal="pressed" from="Create/VBoxContainer/TabContainer/Create/Create" to="." method="_on_create_pressed"]
+[connection signal="pressed" from="Create/VBoxContainer/TabContainer/Create/LoadLatest" to="." method="_on_continue_pressed"]
 [connection signal="pressed" from="Create/VBoxContainer/TabContainer/Join/Join" to="." method="_on_join_pressed"]
