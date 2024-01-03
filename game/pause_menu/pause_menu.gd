@@ -5,7 +5,8 @@ signal quit_game
 
 
 func _on_save_pressed() -> void:
-    save_game.emit()
+	save_game.emit()
+
 
 func _on_quit_pressed() -> void:
-    quit_game.emit()
+	quit_game.emit()

@@ -1,3 +1,39 @@
+# Development
+## VSCode Integration
+Install [this plugin](https://marketplace.visualstudio.com/items?itemName=geequlim.godot-tools). Check [launch.json](./vscode/launch.json) for details but it should work out of the box. There is a [known bug](https://github.com/godotengine/godot-vscode-plugin/issues/336) where how reload doesn't work. Use Godot text editor for that.
+
+## Linter and Formatter
+
+Linting and formatting is done using [GDScript Toolkit](https://github.com/Scony/godot-gdscript-toolkit) which requires a Python runtime.
+
+Installation on Windows:
+1. [Download](https://www.python.org/downloads/) and run the installer.
+    1. Use ADVANCED mode.
+    2. Check "pip" and "Create Path variables".
+2. Run `pip3 install setuptools` .
+3. Run `pip3 install "gdtoolkit==4.*"`.
+4. Add `C:\Users\<YOUR_USER>\AppData\Roaming\Python\Python312\Scripts` (The directory where Python was installed + `\Scripts`).
+
+Lint with `gdlint .` and format with `gdformat .`
+
+Optionally, you can install [GDScript Formatter](https://marketplace.visualstudio.com/items?itemName=Razoric.gdscript-toolkit-formatter) and enable `Format on Save` in VSCode.
+
+Order definition errors are not very informative so here is a quick reference for the correct order:
+* `tool`
+* `classname`
+* `extends`
+* signals
+* enums
+* constants
+* exports
+* public variables
+* private variables (prefixed with underscore `_`)
+* `onready` public variables
+* `onready` private variables (prefixed with underscore `_`)
+* other statements
+
+More info [here](https://github.com/Scony/godot-gdscript-toolkit/wiki/3.-Linter).
+
 # Versioning
 
 Game version is stored in `BuildInfo` static class. Version is compatible with [Semantic Versioning](https://semver.org/).
