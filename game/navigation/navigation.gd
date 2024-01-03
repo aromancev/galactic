@@ -4,5 +4,6 @@ extends Node
 
 @export var galaxy: Galaxy
 
+
 func generate() -> void:
-    galaxy.generate()
+	galaxy.generate()
