@@ -110,7 +110,7 @@ func check_and_repair() -> void:
 
         # Too many files for the same id.
         var id_str := parts[1]
-        var count = id_counts.get(id_str, 0) + 1
+        var count := id_counts.get(id_str, 0) as int + 1
         if count > _MAX_FILES_PER_ID:
             DirAccess.remove_absolute(_get_path(name))
             continue
@@ -139,7 +139,7 @@ func _remove_extra_files(id: UUID) -> void:
 func _read_file_names() -> PackedStringArray:
     var all_files := DirAccess.get_files_at(_FILES_DIR)
     var healthy_files := Array(all_files).filter(
-        func(f): 
+        func(f: String) -> bool: 
             return !f.begins_with("_") && f.count("_") == 1
     )
     healthy_files.reverse() # Reverse the order to get the latest save first.

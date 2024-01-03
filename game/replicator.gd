@@ -62,7 +62,8 @@ func set_model(model: PackedByteArray) -> void:
 
         var node := container.get_node_or_null(path)
         if !node:
-            node = load(data.get_var(NodeScheme.SCENE)).instantiate()
+            var scene := load(data.get_var(NodeScheme.SCENE) as String) as PackedScene
+            node = scene.instantiate()
             node.name = _get_name(path)
             var parent := _get_parent_path(path)
             if parent:
@@ -87,7 +88,7 @@ class NodeAppender:
     var append_index: int
     var appended: Dictionary = {}
 
-    func _init(p_container: Node, p_payload: BinaryPayload, p_append_index: int):
+    func _init(p_container: Node, p_payload: BinaryPayload, p_append_index: int) -> void:
         container = p_container
         payload = p_payload
         append_index = p_append_index

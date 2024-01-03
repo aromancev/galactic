@@ -2,20 +2,18 @@
 class_name Lobby
 extends Node
 
-const Player := preload("res://game/session/player.gd")
-
 @export var player_list: Node
 @export var messages: Node
 @export var messages_scroll: ScrollContainer
 @export var input: TextEdit
 
-func _ready():
+func _ready() -> void:
     Session.player_connected.connect(_update_players)
     Session.player_disconnected.connect(_update_players)
 
 @rpc("any_peer", "call_local", "reliable")
-func _add_message(text: String):
-    var player := Session.players[multiplayer.get_remote_sender_id()] as Player
+func _add_message(text: String) -> void:
+    var player: Player = Session.players[multiplayer.get_remote_sender_id()]
     var l := Label.new()
     l.text = "[%s] %s" % [player.name, text]
     messages.add_child(l)
@@ -24,24 +22,25 @@ func _add_message(text: String):
     await RenderingServer.frame_pre_draw
     bar.value = bar.max_value
 
-func _update_players(_peer_id, _player):
+func _update_players(_peer_id: int, _player: Player) -> void:
     for c in player_list.get_children():
         player_list.remove_child(c)
         c.queue_free()
 
-    for p in Session.players.values():
+    for p: Player in Session.players.values():
         var l := Label.new()
         l.text = p.name
         player_list.add_child(l)
 
-func _input(event):
+func _input(event: InputEvent) -> void:
     if not event.is_pressed():
         return
 
     if not (event is InputEventKey):
         return
 
-    if event.keycode != KEY_ENTER:
+    var event_key: InputEventKey = event
+    if event_key.keycode != KEY_ENTER:
         return
 
     if not input.has_focus():

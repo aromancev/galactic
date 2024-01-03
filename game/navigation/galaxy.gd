@@ -24,11 +24,11 @@ var destination_cell: GalaxyCell
 var _rand_state: int
 var _current_axial: Vector2i
 
-func generate():
+func generate() -> void:
     _rand_state = RandomNumberGenerator.new().state
     _set_model.rpc(_get_model())
 
-func _ready():
+func _ready() -> void:
     add_to_group(Replicator.GROUP)
 
 func _get_model() -> PackedByteArray:
@@ -38,7 +38,7 @@ func _get_model() -> PackedByteArray:
     return p.encode()
 
 @rpc("authority", "call_local", "reliable")
-func _set_model(model: PackedByteArray):
+func _set_model(model: PackedByteArray) -> void:
     var p := BinaryPayload.decoded(model)
     
     _rand_state = p.get_var(1)
@@ -49,7 +49,7 @@ func _set_model(model: PackedByteArray):
     _generate_cells(rand)
     _set_current_cell(_current_axial)
 
-func _draw():
+func _draw() -> void:
     var current := cells.get(_current_axial) as GalaxyCell
     if !current:
         return
@@ -85,16 +85,16 @@ func _set_current_cell(axial: Vector2i) -> void:
     if target == destination_cell:
         generate()
 
-func _generate_cells(rand: RandomNumberGenerator):
+func _generate_cells(rand: RandomNumberGenerator) -> void:
     _clear_cells()
 
     _generate_cell(rand, Vector2i())
-    var size = cells.size()
+    var size := cells.size()
     var key: Vector2i = cells.keys()[rand.randi_range(0, cells.size()-1)]
     destination_cell = cells[key]
     destination_cell.is_destination = true
 
-func _on_cell_selected(cell: GalaxyCell, axial: Vector2i):
+func _on_cell_selected(cell: GalaxyCell, axial: Vector2i) -> void:
     var current := cells.get(_current_axial) as GalaxyCell
     if not current or cell not in current.neighbors:
         return
@@ -119,7 +119,7 @@ func _generate_cell(rand: RandomNumberGenerator, axial: Vector2i) -> GalaxyCell:
         cell_radius * (3./2 * axial.x),
     )
 
-    var cell := cell_scene.instantiate()
+    var cell: GalaxyCell = cell_scene.instantiate()
     cell.position = pixel
     cell.jitter(
         rand, 
@@ -147,8 +147,8 @@ func _generate_cell(rand: RandomNumberGenerator, axial: Vector2i) -> GalaxyCell:
 
     return cell
 
-func _clear_cells():
-    for c in cells.values():
+func _clear_cells() -> void:
+    for c: GalaxyCell in cells.values():
         remove_child(c)
         c.queue_free()
     

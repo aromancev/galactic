@@ -4,6 +4,6 @@ extends Node
 class_name World
 
 func bootstrap() -> void:
-    var navigation = load("res://game/navigation/navigation.tscn").instantiate()
+    var navigation: Navigation = (load("res://game/navigation/navigation.tscn") as PackedScene).instantiate()
     add_child(navigation)
     navigation.generate()

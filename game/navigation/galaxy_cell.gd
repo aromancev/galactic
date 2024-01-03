@@ -16,8 +16,8 @@ var is_destination: bool = false:
 var node_position := Vector2()
 var neighbors: Array[GalaxyCell]
 
-func jitter(rand: RandomNumberGenerator, j_min: int, j_max: int):
-    var distance := rand.randi_range(j_min, j_max)
+func jitter(rand: RandomNumberGenerator, j_min: float, j_max: float) -> void:
+    var distance := rand.randf_range(j_min, j_max)
     var angle := rand.randf_range(0, 2 * PI)
     node.position = Vector2(
         distance * cos(angle), 
@@ -25,5 +25,5 @@ func jitter(rand: RandomNumberGenerator, j_min: int, j_max: int):
     )
     node_position = self.position + node.position
 
-func _on_galaxy_node_selected():
+func _on_galaxy_node_selected() -> void:
     selected.emit()
