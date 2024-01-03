@@ -13,13 +13,13 @@ func is_valid() -> bool:
 func is_equal(other: UUID) -> bool:
     return _data == other._data
 
-func _init(from: Variant = null):
+func _init(from: Variant = null)  -> void:
     if from is PackedByteArray:
         _data = from
     elif from is String:
-        _data = from.replace("-", "").hex_decode()
+        _data = (from as String).replace("-", "").hex_decode()
     elif from is UUID:
-        _data = PackedByteArray(from._data)
+        _data = PackedByteArray((from as UUID)._data)
     elif from == null:
         _data = Crypto.new().generate_random_bytes(16)
         # Set version and variant bits.
