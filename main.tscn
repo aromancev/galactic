@@ -5,9 +5,10 @@
 
 [node name="Main" type="Node" node_paths=PackedStringArray("menu")]
 script = ExtResource("1_gv753")
-menu = NodePath("menu")
+menu = NodePath("Menu")
 
-[node name="menu" parent="." instance=ExtResource("1_sc2yv")]
+[node name="Menu" parent="." instance=ExtResource("1_sc2yv")]
 
-[connection signal="create" from="menu" to="." method="_on_menu_create"]
-[connection signal="join" from="menu" to="." method="_on_menu_join"]
+[connection signal="create" from="Menu" to="." method="_on_menu_create"]
+[connection signal="join" from="Menu" to="." method="_on_menu_join"]
+[connection signal="load_latest" from="Menu" to="." method="_on_menu_load_latest"]
