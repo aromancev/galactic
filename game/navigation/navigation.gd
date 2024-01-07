@@ -6,4 +6,4 @@ extends Node
 
 
 func generate() -> void:
-	galaxy.generate()
+    galaxy.generate()

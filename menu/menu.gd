@@ -12,17 +12,17 @@ signal join(name: String, address: String)
 
 
 func _ready() -> void:
-	if Saver.has_saves():
-		load_latest_btn.visible = true
+    if Saver.has_saves():
+        load_latest_btn.visible = true
 
 
 func _on_create_pressed() -> void:
-	create.emit(player_name.text)
+    create.emit(player_name.text)
 
 
 func _on_join_pressed() -> void:
-	join.emit(player_name.text, join_address.text)
+    join.emit(player_name.text, join_address.text)
 
 
 func _on_continue_pressed() -> void:
-	load_latest.emit(player_name.text)
+    load_latest.emit(player_name.text)

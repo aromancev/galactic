@@ -52,152 +52,152 @@ var _values: Array[Variant] = []
 
 
 static func decoded(data: PackedByteArray) -> BinaryPayload:
-	var p := BinaryPayload.new()
-	p.decode(data)
-	return p
+    var p := BinaryPayload.new()
+    p.decode(data)
+    return p
 
 
 func get_var(index: int) -> Variant:
-	if index < 0 || index >= _values.size():
-		return null
+    if index < 0 || index >= _values.size():
+        return null
 
-	return _values[index]
+    return _values[index]
 
 
 # Tries to decode a PackedByteArray field as BinaryPayload.
 func get_payload(index: int) -> BinaryPayload:
-	if index < 0 || index >= _values.size():
-		return null
+    if index < 0 || index >= _values.size():
+        return null
 
-	return BinaryPayload.decoded((_values as Array[PackedByteArray])[index])
+    return BinaryPayload.decoded((_values as Array[PackedByteArray])[index])
 
 
 func get_payload_array(index: int) -> Array[BinaryPayload]:
-	if index < 0 || index >= _values.size():
-		return []
+    if index < 0 || index >= _values.size():
+        return []
 
-	if !(_values[index] is Array):
-		return []
+    if !(_values[index] is Array):
+        return []
 
-	return _BinaryPayloadArray.decoded(_values as Array[PackedByteArray]).items
+    return _BinaryPayloadArray.decoded(_values as Array[PackedByteArray]).items
 
 
 func set_var(index: int, value: Variant) -> void:
-	_ensure_size(index)
-	_values[index] = value
+    _ensure_size(index)
+    _values[index] = value
 
 
 func set_payload(index: int, value: BinaryPayload) -> void:
-	set_var(index, value)
+    set_var(index, value)
 
 
 # Appends a value to an array stored in the index.
 # If the value is not set, a new array will be created.
 # If the value already exists and is not an array, it will be overridden.
 func append_var(index: int, value: Variant) -> void:
-	_ensure_size(index)
-	if !(_values[index] is Array):
-		_values[index] = []
+    _ensure_size(index)
+    if !(_values[index] is Array):
+        _values[index] = []
 
-	(_values as Array[PackedByteArray]).append(value)
+    (_values as Array[PackedByteArray]).append(value)
 
 
 # Appends a value to an array stored in the index.
 # If the value is not set, a new array will be created.
 # If the value already exists and is not an array, it will be overridden.
 func append_payload(index: int, value: BinaryPayload) -> void:
-	_ensure_size(index)
-	if !(_values[index] is _BinaryPayloadArray):
-		_values[index] = _BinaryPayloadArray.new()
+    _ensure_size(index)
+    if !(_values[index] is _BinaryPayloadArray):
+        _values[index] = _BinaryPayloadArray.new()
 
-	(_values as Array[_BinaryPayloadArray])[index].items.append(value)
+    (_values as Array[_BinaryPayloadArray])[index].items.append(value)
 
 
 # Appends a value to an array stored in the index.
 # If the value is not set, a new array will be created.
 # If the value already exists and is not an array, it will be overridden.
 func append_int32(index: int, value: int) -> void:
-	_ensure_size(index)
-	if !(_values[index] is PackedInt32Array):
-		_values[index] = PackedInt32Array()
+    _ensure_size(index)
+    if !(_values[index] is PackedInt32Array):
+        _values[index] = PackedInt32Array()
 
-	(_values as Array[PackedInt32Array])[index].append(value)
+    (_values as Array[PackedInt32Array])[index].append(value)
 
 
 # Appends a value to an array stored in the index.
 # If the value is not set, a new array will be created.
 # If the value already exists and is not an array, it will be overridden.
 func append_vector2(index: int, value: Vector2) -> void:
-	_ensure_size(index)
-	if !(_values[index] is PackedVector2Array):
-		_values[index] = PackedVector2Array()
+    _ensure_size(index)
+    if !(_values[index] is PackedVector2Array):
+        _values[index] = PackedVector2Array()
 
-	(_values as Array[PackedVector2Array])[index].append(value)
+    (_values as Array[PackedVector2Array])[index].append(value)
 
 
 func encode() -> PackedByteArray:
-	var buff := StreamPeerBuffer.new()
-	buff.put_u8(VERSION)
+    var buff := StreamPeerBuffer.new()
+    buff.put_u8(VERSION)
 
-	for i in _values.size():
-		# Null values are not stored because any non-existent index will return null anyway.
-		if _values[i] == null:
-			continue
+    for i in _values.size():
+        # Null values are not stored because any non-existent index will return null anyway.
+        if _values[i] == null:
+            continue
 
-		buff.put_u8(i)
-		if _values[i] is BinaryPayload:
-			buff.put_var((_values as Array[BinaryPayload])[i].encode())
-		elif _values[i] is _BinaryPayloadArray:
-			buff.put_var((_values as Array[_BinaryPayloadArray])[i].encode())
-		else:
-			buff.put_var(_values[i])
+        buff.put_u8(i)
+        if _values[i] is BinaryPayload:
+            buff.put_var((_values as Array[BinaryPayload])[i].encode())
+        elif _values[i] is _BinaryPayloadArray:
+            buff.put_var((_values as Array[_BinaryPayloadArray])[i].encode())
+        else:
+            buff.put_var(_values[i])
 
-	return buff.data_array
+    return buff.data_array
 
 
 func decode(data: PackedByteArray) -> void:
-	_values.clear()
+    _values.clear()
 
-	var buff := StreamPeerBuffer.new()
-	buff.data_array = data
+    var buff := StreamPeerBuffer.new()
+    buff.data_array = data
 
-	var version := buff.get_u8()
-	assert(version > 0 && version <= VERSION, "Unknown payload version.")
+    var version := buff.get_u8()
+    assert(version > 0 && version <= VERSION, "Unknown payload version.")
 
-	while buff.get_position() < buff.get_size():
-		var i := buff.get_u8()
-		_ensure_size(i)
-		_values[i] = buff.get_var()
+    while buff.get_position() < buff.get_size():
+        var i := buff.get_u8()
+        _ensure_size(i)
+        _values[i] = buff.get_var()
 
 
 # Ensures values array is enough to store all indexes.
 func _ensure_size(index: int) -> void:
-	assert(
-		index >= MIN_INDEX && index <= MAX_INDEX,
-		"Index must be between %s and %s." % [MIN_INDEX, MAX_INDEX]
-	)
+    assert(
+        index >= MIN_INDEX && index <= MAX_INDEX,
+        "Index must be between %s and %s." % [MIN_INDEX, MAX_INDEX]
+    )
 
-	# Every time index is higher than size, increase size by two. This ensures logarythmic
-	# complexity even if resize doesn't do it internally.
-	if index >= _values.size():
-		_values.resize(min(index * 2, MAX_INDEX) as int + 1)
+    # Every time index is higher than size, increase size by two. This ensures logarythmic
+    # complexity even if resize doesn't do it internally.
+    if index >= _values.size():
+        _values.resize(min(index * 2, MAX_INDEX) as int + 1)
 
 
 # Helper class to encode and decode array of payloads.
 # DO NOT expose this to avoid creating a complicated API.
 class _BinaryPayloadArray:
-	var items: Array[BinaryPayload]
+    var items: Array[BinaryPayload]
 
-	static func decoded(data: Array[PackedByteArray]) -> _BinaryPayloadArray:
-		var arr := _BinaryPayloadArray.new()
-		arr.items.resize(data.size())
-		for i in data.size():
-			arr.items[i] = BinaryPayload.decoded(data[i] as PackedByteArray)
-		return arr
+    static func decoded(data: Array[PackedByteArray]) -> _BinaryPayloadArray:
+        var arr := _BinaryPayloadArray.new()
+        arr.items.resize(data.size())
+        for i in data.size():
+            arr.items[i] = BinaryPayload.decoded(data[i] as PackedByteArray)
+        return arr
 
-	func encode() -> Array[PackedByteArray]:
-		var data: Array[PackedByteArray] = []
-		data.resize(items.size())
-		for i in items.size():
-			data[i] = items[i].encode()
-		return data
+    func encode() -> Array[PackedByteArray]:
+        var data: Array[PackedByteArray] = []
+        data.resize(items.size())
+        for i in items.size():
+            data[i] = items[i].encode()
+        return data

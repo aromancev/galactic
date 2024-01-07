@@ -1,0 +1,85 @@
+[gd_scene load_steps=13 format=3 uid="uid://cpdkh5x4i1vcp"]
+
+[ext_resource type="Script" path="res://game/locations/camera.gd" id="1_6esjq"]
+[ext_resource type="MeshLibrary" uid="uid://dougbqoy5ibxj" path="res://game/locations/library/library.tres" id="1_tvgfh"]
+[ext_resource type="Script" path="res://game/locations/character.gd" id="3_7yvk1"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1chnj"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_uo42d"]
+sky_material = SubResource("ProceduralSkyMaterial_1chnj")
+
+[sub_resource type="Environment" id="Environment_t2w61"]
+background_mode = 2
+sky = SubResource("Sky_uo42d")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_tqfor"]
+bounce = 0.82
+
+[sub_resource type="SphereMesh" id="SphereMesh_au4yn"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_fhx70"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7ren1"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_qur2d"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ov056"]
+
+[node name="Level" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_t2w61")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 10.1742)
+script = ExtResource("1_6esjq")
+
+[node name="GridMap" type="GridMap" parent="."]
+mesh_library = ExtResource("1_tvgfh")
+cell_size = Vector3(4, 2, 4)
+cell_center_y = false
+data = {
+"cells": PackedInt32Array(65534, 1, 655363, 0, 1, 1441795, 0, 0, 3, 65535, 1, 655361, 65534, 0, 1048579, 65535, 0, 1048576, 65535, 65535, 2, 65535, 65534, 2, 65535, 65533, 655362, 65535, 65532, 1048579, 0, 65532, 1048578, 1, 65532, 1048578, 2, 65532, 1441795, 2, 65531, 655362, 2, 65530, 655362, 2, 65529, 655362, 2, 65528, 3, 1, 65528, 1441794, 0, 65528, 1441794, 65535, 65528, 655363, 65535, 65527, 655362, 65535, 65526, 655362, 65535, 65525, 655360, 65535, 65524, 1, 65534, 65525, 655363, 65534, 65524, 1048579, 0, 65524, 3, 0, 65525, 1441795)
+}
+metadata/_editor_floor_ = Vector3(0, 0, 0)
+
+[node name="Ball" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.04901, 5.2495, 2.09616)
+physics_material_override = SubResource("PhysicsMaterial_tqfor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ball"]
+mesh = SubResource("SphereMesh_au4yn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ball"]
+shape = SubResource("SphereShape3D_fhx70")
+
+[node name="Character" type="CharacterBody3D" parent="." node_paths=PackedStringArray("ball")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0492, 1.01487, 2.75383)
+script = ExtResource("3_7yvk1")
+ball = NodePath("../Node3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Character"]
+shape = SubResource("CapsuleShape3D_7ren1")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="Character"]
+debug_enabled = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Character"]
+mesh = SubResource("CapsuleMesh_qur2d")
+skeleton = NodePath("")
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.90261, 0.72983, 2.32682)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D"]
+mesh = SubResource("BoxMesh_ov056")
+skeleton = NodePath("../..")

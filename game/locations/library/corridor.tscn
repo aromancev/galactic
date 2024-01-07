@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://bptk62cbxdgq1"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_kc3ox"]
+size = Vector2(4, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44t3o"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_jbp45"]
+size = Vector2(2, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ig73i"]
+
+[node name="Corridor" type="CSGCombiner3D"]
+
+[node name="Floor" type="CSGMesh3D" parent="."]
+mesh = SubResource("PlaneMesh_kc3ox")
+material = SubResource("StandardMaterial3D_44t3o")
+
+[node name="Wall" type="CSGMesh3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 2, 1, 0)
+mesh = SubResource("PlaneMesh_jbp45")
+material = SubResource("StandardMaterial3D_ig73i")
+
+[node name="Wall2" type="CSGMesh3D" parent="."]
+transform = Transform3D(4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, -3.82137e-15, -8.74228e-08, -1, -2, 1, 0)
+mesh = SubResource("PlaneMesh_jbp45")
+material = SubResource("StandardMaterial3D_ig73i")

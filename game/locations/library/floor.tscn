@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://d11bn5mmkjtpv"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_kc3ox"]
+size = Vector2(4, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44t3o"]
+
+[node name="Floor" type="CSGCombiner3D"]
+
+[node name="Floor" type="CSGMesh3D" parent="."]
+mesh = SubResource("PlaneMesh_kc3ox")
+material = SubResource("StandardMaterial3D_44t3o")
