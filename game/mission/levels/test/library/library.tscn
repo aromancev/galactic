@@ -1,0 +1,83 @@
+[gd_scene load_steps=14 format=3 uid="uid://dik8wq55lrx01"]
+
+[ext_resource type="PackedScene" uid="uid://c3w0hhmmrkgpt" path="res://game/mission/levels/test/library/floor.gltf" id="1_pobwa"]
+[ext_resource type="PackedScene" uid="uid://dwmf3h7pljppr" path="res://game/mission/levels/test/library/corridor.gltf" id="2_jiemx"]
+[ext_resource type="PackedScene" uid="uid://cse4lliet256a" path="res://game/mission/levels/test/library/wall.gltf" id="2_jrfgn"]
+[ext_resource type="PackedScene" uid="uid://bvcjcjao7mojn" path="res://game/mission/levels/test/library/corner.gltf" id="4_w14lu"]
+[ext_resource type="PackedScene" uid="uid://cgqok8j2n5n5v" path="res://game/mission/levels/test/library/void.gltf" id="5_eu3u8"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_srku3"]
+points = PackedVector3Array(-2, 0, -2, -2, 0, 1.99995, 1.99995, 0, -2, 1.99995, 0, 1.99995)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_htdgk"]
+vertices = PackedVector3Array(-1.5, 0.5, -1.5, -1.5, 0.5, 1.5, 1.5, 0.5, 1.5, 1.5, 0.5, -1.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_giuq7"]
+data = PackedVector3Array(1.9999, 0, 1.9999, -2, 0, 1.9999, 1.9999, 0, -2, -2, 0, 1.9999, -2, 0, -2, 1.9999, 0, -2, 1.9999, 2, -2, 1.9999, 0, -2, -2, 2, -2, 1.9999, 0, -2, -2, 0, -2, -2, 2, -2)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_18y1x"]
+vertices = PackedVector3Array(-1.5, 0.5, -1.25, -1.5, 0.5, 1.5, 1.5, 0.5, 1.5, 1.5, 0.5, -1.25)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_n36ww"]
+data = PackedVector3Array(1.9999, 0, 1.9999, -2, 0, 1.9999, 1.9999, 0, -2, -2, 0, 1.9999, -2, 0, -2, 1.9999, 0, -2, 1.9999, 2, 1.9999, 1.9999, 0, 1.9999, 1.9999, 2, -2, 1.9999, 0, 1.9999, 1.9999, 0, -2, 1.9999, 2, -2, -2, 2, -2, -2, 0, -2, -2, 2, 1.9999, -2, 0, -2, -2, 0, 1.9999, -2, 2, 1.9999)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_asyid"]
+vertices = PackedVector3Array(-1.25, 0.5, -1.5, -1.25, 0.5, 1.5, 1.25, 0.5, 1.5, 1.25, 0.5, -1.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_tcd8u"]
+data = PackedVector3Array(1.9999, 0, 1.9999, -2, 0, 1.9999, 1.9999, 0, -2, -2, 0, 1.9999, -2, 0, -2, 1.9999, 0, -2, 1.9999, 2, 1.9999, 1.9999, 0, 1.9999, 1.9999, 2, -2, 1.9999, 0, 1.9999, 1.9999, 0, -2, 1.9999, 2, -2, 1.9999, 2, -2, 1.9999, 0, -2, -2, 2, -2, 1.9999, 0, -2, -2, 0, -2, -2, 2, -2)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_1mq2b"]
+vertices = PackedVector3Array(-1.5, 0.5, -1.25, -1.5, 0.5, 1.5, 1.25, 0.5, 1.5, 1.25, 0.5, -1.25)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[node name="Library" type="Node3D"]
+
+[node name="Floor" parent="." instance=ExtResource("1_pobwa")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Floor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_srku3")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Floor"]
+navigation_mesh = SubResource("NavigationMesh_htdgk")
+
+[node name="Wall" parent="." instance=ExtResource("2_jrfgn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Wall"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_giuq7")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Wall"]
+navigation_mesh = SubResource("NavigationMesh_18y1x")
+
+[node name="Corridor" parent="." instance=ExtResource("2_jiemx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Corridor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Corridor/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_n36ww")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Corridor"]
+navigation_mesh = SubResource("NavigationMesh_asyid")
+
+[node name="Corner" parent="." instance=ExtResource("4_w14lu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Corner"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Corner/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_tcd8u")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Corner"]
+navigation_mesh = SubResource("NavigationMesh_1mq2b")
+
+[node name="Void" parent="." instance=ExtResource("5_eu3u8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 0)

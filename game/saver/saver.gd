@@ -9,6 +9,8 @@ var instance: Abstract
 
 # Abstract is what any specific saver should implement.
 class Abstract:
+	extends RefCounted
+
 	func has_saves() -> bool:
 		return false
 

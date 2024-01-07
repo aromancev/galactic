@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="Model" load_steps=2 format=3 uid="uid://cspe3vmy6327s"]
+
+[ext_resource type="Script" path="res://game/mission/model.gd" id="1_groqa"]
+
+[resource]
+script = ExtResource("1_groqa")
+abilities = PackedStringArray("navigate")

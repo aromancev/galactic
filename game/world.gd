@@ -5,8 +5,5 @@ extends Node
 
 
 func bootstrap() -> void:
-	var navigation: Navigation = (
-		(load("res://game/navigation/navigation.tscn") as PackedScene).instantiate()
-	)
-	add_child(navigation)
-	navigation.generate()
+	var mission: Node = (load("res://game/mission/mission.tscn") as PackedScene).instantiate()
+	add_child(mission)

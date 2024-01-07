@@ -79,7 +79,7 @@ func get_payload_array(index: int) -> Array[BinaryPayload]:
 	if !(_values[index] is Array):
 		return []
 
-	return _BinaryPayloadArray.decoded(_values as Array[PackedByteArray]).items
+	return _BinaryPayloadArray.decoded(_values).items
 
 
 func set_var(index: int, value: Variant) -> void:
@@ -186,13 +186,14 @@ func _ensure_size(index: int) -> void:
 # Helper class to encode and decode array of payloads.
 # DO NOT expose this to avoid creating a complicated API.
 class _BinaryPayloadArray:
+	extends RefCounted
 	var items: Array[BinaryPayload]
 
-	static func decoded(data: Array[PackedByteArray]) -> _BinaryPayloadArray:
+	static func decoded(data: Array) -> _BinaryPayloadArray:
 		var arr := _BinaryPayloadArray.new()
 		arr.items.resize(data.size())
 		for i in data.size():
-			arr.items[i] = BinaryPayload.decoded(data[i] as PackedByteArray)
+			arr.items[i] = BinaryPayload.decoded(data)
 		return arr
 
 	func encode() -> Array[PackedByteArray]:
