@@ -2,6 +2,7 @@
 .godot/
 *.translation
 *.tmp
+*.bin
 
 # VSCode
 .vscode/*

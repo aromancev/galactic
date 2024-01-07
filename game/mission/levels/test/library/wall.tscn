@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://sxdkcpot6h8d"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_kc3ox"]
+size = Vector2(4, 4)
+
+[node name="Void" type="CSGCombiner3D"]
+
+[node name="Void" type="CSGMesh3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("PlaneMesh_kc3ox")

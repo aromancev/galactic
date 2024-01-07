@@ -13,7 +13,6 @@ func _init() -> void:
 
 
 func _on_menu_create(player_name: String) -> void:
-	remove_child(menu)
 	menu.queue_free()
 
 	var player := Player.new()
@@ -25,7 +24,6 @@ func _on_menu_create(player_name: String) -> void:
 
 
 func _on_menu_join(player_name: String, join_address: String) -> void:
-	remove_child(menu)
 	menu.queue_free()
 
 	var player := Player.new()
@@ -37,7 +35,6 @@ func _on_menu_join(player_name: String, join_address: String) -> void:
 
 
 func _on_menu_load_latest(player_name: String) -> void:
-	remove_child(menu)
 	menu.queue_free()
 
 	var player := Player.new()
