@@ -15,7 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: Scony/godot-gdscript-toolkit@4.2.2
-    - run: gdlint .
+    - run: gdlint game
+    - run: gdlint menu
+    - run: gdlint platform
 
   format:
     name: 'Format'
@@ -23,4 +25,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: Scony/godot-gdscript-toolkit@4.2.2
-    - run: gdformat --check .
+    - run: gdformat --check game
+    - run: gdformat --check menu
+    - run: gdformat --check platform
