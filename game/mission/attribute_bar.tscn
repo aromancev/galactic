@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://b3cuipgu8fdfd"]
+
+[ext_resource type="Shader" path="res://game/mission/attribute_bar.gdshader" id="1_xvke6"]
+[ext_resource type="Script" path="res://game/mission/attribute_bar.gd" id="2_ahlme"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m84x7"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_xvke6")
+shader_parameter/albedoFrom = null
+shader_parameter/albedoTo = null
+shader_parameter/albedoBG = Color(0, 0, 0, 1)
+shader_parameter/progress = null
+
+[sub_resource type="QuadMesh" id="QuadMesh_ocyil"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_m84x7")
+size = Vector2(1, 0.1)
+
+[node name="MeshInstance3D" type="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("QuadMesh_ocyil")
+script = ExtResource("2_ahlme")

@@ -1,4 +1,3 @@
-class_name AbilityNavigate
 extends Ability
 
 const _SPEED = 5
@@ -19,7 +18,7 @@ func _physics_process(_delta: float) -> void:
 	if _navigator.is_navigation_finished():
 		return
 
-	unit.velocity = (
-		unit.global_position.direction_to(_navigator.get_next_path_position()) * _SPEED
+	get_unit().velocity = (
+		get_unit().global_position.direction_to(_navigator.get_next_path_position()) * _SPEED
 	)
-	unit.move_and_slide()
+	get_unit().move_and_slide()

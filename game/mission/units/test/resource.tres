@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=4 format=3 uid="uid://cspe3vmy6327s"]
+
+[ext_resource type="Resource" uid="uid://ci24yo7c78pcd" path="res://game/mission/abilities/navigate/resource.tres" id="1_7lnm6"]
+[ext_resource type="Script" path="res://game/mission/unit_resource.gd" id="2_km210"]
+[ext_resource type="Resource" uid="uid://bwp1appmbhxb2" path="res://game/mission/attributes/health/resource.tres" id="2_lxnkm"]
+
+[resource]
+script = ExtResource("2_km210")
+abilities = Array[Resource("res://game/mission/ability_resource.gd")]([ExtResource("1_7lnm6")])
+attributes = Array[Resource("res://game/mission/attribute_resource.gd")]([ExtResource("2_lxnkm")])

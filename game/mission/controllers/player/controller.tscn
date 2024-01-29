@@ -4,9 +4,3 @@
 
 [node name="Player" type="Node3D"]
 script = ExtResource("1_xk3k4")
-
-[node name="Name" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-text = "Player"
-font_size = 64
-outline_size = 24
