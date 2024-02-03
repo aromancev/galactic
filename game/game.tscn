@@ -17,6 +17,10 @@ world = NodePath("World")
 script = ExtResource("2_q1tly")
 container = NodePath("../World")
 
+[node name="WoldSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/mission/mission.tscn")
+spawn_path = NodePath("../World")
+
 [node name="World" type="Node" parent="."]
 script = ExtResource("3_sxl7d")
 

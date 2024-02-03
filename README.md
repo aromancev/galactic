@@ -8,8 +8,8 @@ Linting and formatting is done using [GDScript Toolkit](https://github.com/Scony
 
 Installation on Windows:
 1. [Download](https://www.python.org/downloads/) and run the installer.
-    1. Use ADVANCED mode.
-    2. Check "pip" and "Create Path variables".
+	1. Use ADVANCED mode.
+	2. Check "pip" and "Create Path variables".
 2. Run `pip3 install setuptools` .
 3. Run `pip3 install "gdtoolkit==4.*"`.
 4. Add `C:\Users\<YOUR_USER>\AppData\Roaming\Python\Python312\Scripts` (The directory where Python was installed + `\Scripts`).

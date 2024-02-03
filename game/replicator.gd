@@ -92,6 +92,7 @@ func _get_parent_path(path: NodePath) -> NodePath:
 # It is a bit complicated because we need to make sure all parents are stored first and there are
 # no duplicates.
 class NodeAppender:
+	extends RefCounted
 	var container: Node
 	var payload: BinaryPayload
 	var append_index: int

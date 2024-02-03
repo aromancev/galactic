@@ -95,6 +95,9 @@ func has_saves() -> bool:
 # crashed while saving.
 # Use once when the game starts.
 func check_and_repair() -> void:
+	# Create a directory if it doesn't exist.
+	DirAccess.make_dir_recursive_absolute(_FILES_DIR)
+
 	var total_count := 0
 	var id_counts: Dictionary = {}
 	var files := DirAccess.get_files_at(_FILES_DIR)
