@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://droq6nuuot3yx"]
+
+[ext_resource type="Script" path="res://game/mission/abilities/shoot/knockback.gd" id="1_23l3y"]
+
+[node name="Knockback" type="Node"]
+script = ExtResource("1_23l3y")

@@ -9,6 +9,8 @@ different units. The unit configuration is called [Model] and contains all the r
 that define how a particular unit should look and behave like [Ability], [Controller], etc.
 """
 
+signal spawn(node: Node)
+
 @export var resource: UnitResource = UnitResource.new()
 @export var label: String:
 	get:
@@ -28,7 +30,13 @@ var _attributes: Dictionary = {}
 @onready var _controller_spawner: MultiplayerSpawner = $ControllerSpawner
 @onready var _ability_spawner: MultiplayerSpawner = $AbilitySpawner
 @onready var _attribute_spawner: MultiplayerSpawner = $AttributeSpawner
+@onready var _collider: CollisionShape3D = $CollisionShape3D
 @onready var _ui: UnitUI = $UI
+
+
+func get_radius() -> float:
+	var capsule: CapsuleShape3D = _collider.shape
+	return capsule.radius
 
 
 # Creates and adds a new [Controller] to the unit. The controller will be replicated to all
@@ -109,6 +117,30 @@ func remove_attribute(slug: String) -> void:
 	_remove_attribute(slug)
 
 
+func get_attribute_value(slug: String) -> float:
+	var attribute: Attribute = _attributes.get(slug)
+	if !attribute:
+		return 0
+
+	return attribute.value
+
+
+func get_attribute_min_value(slug: String) -> float:
+	var attribute: Attribute = _attributes.get(slug)
+	if !attribute:
+		return 0
+
+	return attribute.min_value
+
+
+func get_attribute_max_value(slug: String) -> float:
+	var attribute: Attribute = _attributes.get(slug)
+	if !attribute:
+		return 0
+
+	return attribute.max_value
+
+
 func increment_attribute_value(slug: String, delta: float) -> void:
 	if !is_multiplayer_authority():
 		return
@@ -116,6 +148,9 @@ func increment_attribute_value(slug: String, delta: float) -> void:
 	var attribute: Attribute = _attributes.get(slug)
 	if !attribute:
 		return
+
+	for ability: Ability in _abilities.values():
+		delta = ability.before_attribute_increment(slug, delta)
 
 	attribute.value += delta
 	_on_attribute_changed(slug)
@@ -248,7 +283,8 @@ func _spawn_ability(slug_id: int) -> Ability:
 		push_error("Can't find Ability with slug_id =  %s" % slug_id)
 		return
 
-	var ability := res.instantiate()
+	var ability: Ability = res.instantiate()
+	ability.spawn.connect(_on_ability_spawn)
 
 	_abilities[slug] = ability
 	return ability
@@ -268,6 +304,10 @@ func _remove_ability(slug: String) -> void:
 
 	_abilities.erase(slug)
 	ability.queue_free()
+
+
+func _on_ability_spawn(node: Node) -> void:
+	spawn.emit(node)
 
 
 func _spawn_attribute(slug_id: int) -> Attribute:

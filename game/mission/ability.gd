@@ -3,14 +3,14 @@ extends Node3D
 """
 Represents [Unit] behaviour.
 
-All extending classes MUST override [method Ability.use] and OPTIONALLY [method Ability.terminate].
 [Ability] implementationa can use any engine callbacks like "_process" or "_physics_process"
 to execute their logic.
 
-WARNING: Unless you know what you are doing, you should only manipulate [Unit] via the proxy
-returned by [member Ability.unit]. It ensures a safe way to not shoot yourself in the foot
-while keeping [Unit] on all peers in sync.
+WARNING: Extending classes should never free themselves.
+Use [method Ability.remove_self] instead.
 """
+
+signal spawn(node: Node)
 
 @export var resource: AbilityResource
 
@@ -26,5 +26,25 @@ func terminate() -> void:
 	pass
 
 
+# Called before incrementing an attribute. Must return a new delta that should be propagated to the
+# attribute.
+# Useful to override attribute changes, for example to reduce incoming damage.
+func before_attribute_increment(_slug: String, delta: float) -> float:
+	return delta
+
+
 func get_unit() -> Unit:
 	return get_parent()
+
+
+func remove_self() -> void:
+	if !get_unit().is_multiplayer_authority():
+		return
+
+	get_unit().remove_ability(resource.get_instance_slug())
+
+
+# Just in case an ability frees itself this will make sure authority removes it from the
+# `_abilities` Dictionary as well.
+func _exit_tree() -> void:
+	remove_self()

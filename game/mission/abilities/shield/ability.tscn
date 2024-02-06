@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://0gq1kq01h6tl"]
+
+[ext_resource type="Script" path="res://game/mission/abilities/shield/ability.gd" id="1_jlufq"]
+
+[node name="AbilityShield" type="Node3D"]
+script = ExtResource("1_jlufq")

@@ -23,4 +23,6 @@ static func get_resource_path(slug: String) -> String:
 
 
 func instantiate() -> Ability:
-	return scene.instantiate()
+	var ability: Ability = scene.instantiate()
+	ability.resource = self
+	return ability

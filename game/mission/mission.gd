@@ -10,6 +10,7 @@ var _players: Dictionary = {}
 
 @onready var _level: Node3D = $Level
 @onready var _unit_spawner: MultiplayerSpawner = $UnitSpawner
+@onready var _units: Node3D = $Units
 
 
 func _ready() -> void:
@@ -24,6 +25,9 @@ func _ready() -> void:
 	Session.player_disconnected.connect(_despawn_player)
 	for id: int in Session.players:
 		_spawn_player(id, Session.get_player(id))
+
+	for i in 2:
+		_spawn_shield()
 
 
 func _spawn_player(peer_id: int, _player: Player) -> void:
@@ -46,4 +50,17 @@ func _spawn_unit(slug_id: int) -> Unit:
 	var resource: UnitResource = load(UnitResource.get_resource_path(slug))
 	var unit := resource.instantiate()
 	unit.position = Vector3(randf_range(-5, 5), 1, randf_range(-5, 5))
+	unit.spawn.connect(_on_unit_spawn)
 	return unit
+
+
+func _spawn_shield() -> void:
+	var Scene := preload("res://game/mission/abilities/shield/powerup.tscn")
+	var shield: ShieldPowerup = Scene.instantiate()
+	shield.position = Vector3(randf_range(-5, 5), 0.5, randf_range(-5, 5))
+	shield.collected.connect(_spawn_shield)
+	_units.add_child(shield, true)
+
+
+func _on_unit_spawn(node: Node) -> void:
+	_units.add_child(node)
