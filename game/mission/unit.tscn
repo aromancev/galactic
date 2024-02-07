@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://7m4cyt8f5cq2"]
+[gd_scene load_steps=6 format=3 uid="uid://7m4cyt8f5cq2"]
 
 [ext_resource type="Script" path="res://game/mission/unit.gd" id="1_4kj1a"]
+[ext_resource type="Script" path="res://game/mission/unit_ui.gd" id="2_624u0"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_aqq1m"]
 properties/0/path = NodePath(".:position")
@@ -26,11 +27,18 @@ mesh = SubResource("CapsuleMesh_djwmv")
 skeleton = NodePath("")
 
 [node name="ControllerSpawner" type="MultiplayerSpawner" parent="."]
-spawn_path = NodePath("../Controllers")
-
-[node name="Controllers" type="Node3D" parent="."]
+spawn_path = NodePath("..")
 
 [node name="AbilitySpawner" type="MultiplayerSpawner" parent="."]
-spawn_path = NodePath("../Abilities")
+spawn_path = NodePath("..")
 
-[node name="Abilities" type="Node3D" parent="."]
+[node name="AttributeSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("..")
+
+[node name="UI" type="Node3D" parent="."]
+script = ExtResource("2_624u0")
+
+[node name="Label" type="Label3D" parent="UI"]
+billboard = 1
+double_sided = false
+text = "Label"

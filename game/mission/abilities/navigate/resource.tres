@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="AbilityResource" load_steps=3 format=3 uid="uid://ci24yo7c78pcd"]
+
+[ext_resource type="PackedScene" uid="uid://wujtc7forwi6" path="res://game/mission/abilities/navigate/ability.tscn" id="1_xgj0i"]
+[ext_resource type="Script" path="res://game/mission/ability_resource.gd" id="2_njs5h"]
+
+[resource]
+script = ExtResource("2_njs5h")
+scene = ExtResource("1_xgj0i")

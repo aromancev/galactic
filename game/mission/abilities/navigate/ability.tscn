@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://game/mission/abilities/navigate/ability.gd" id="1_64oed"]
 
-[node name="Navigate" type="Node3D"]
+[node name="AbilityNavigate" type="Node3D"]
 script = ExtResource("1_64oed")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]

@@ -27,8 +27,8 @@ func _ready() -> void:
 
 
 func _spawn_player(peer_id: int, _player: Player) -> void:
-	var unit: Unit = _unit_spawner.spawn(Model.get_slug_id("dummy"))
-	unit.add_controller(Controller.get_slug_id("player"), peer_id)
+	var unit: Unit = _unit_spawner.spawn(UnitResource.get_slug_id("test"))
+	unit.add_controller("player", peer_id)
 	_players[peer_id] = unit
 
 
@@ -41,7 +41,9 @@ func _despawn_player(peer_id: int) -> void:
 	_players.erase(peer_id)
 
 
-func _spawn_unit(model_slug_id: int) -> Unit:
-	var unit := Unit.instantiate(Model.load_new(model_slug_id))
+func _spawn_unit(slug_id: int) -> Unit:
+	var slug := UnitResource.get_slug(slug_id)
+	var resource: UnitResource = load(UnitResource.get_resource_path(slug))
+	var unit := resource.instantiate()
 	unit.position = Vector3(randf_range(-5, 5), 1, randf_range(-5, 5))
 	return unit
