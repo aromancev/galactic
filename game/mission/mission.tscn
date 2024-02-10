@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cpdkh5x4i1vcp"]
 
-[ext_resource type="Script" path="res://game/mission/camera.gd" id="1_6esjq"]
+[ext_resource type="Script" path="res://game/mission/mission_camera.gd" id="1_6esjq"]
 [ext_resource type="Script" path="res://game/mission/mission.gd" id="1_j2t8p"]
 
 [node name="Mission" type="Node3D"]
@@ -22,3 +22,7 @@ spawn_path = NodePath("../Units")
 
 [node name="Units" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.182, 0, 7.312)
+
+[node name="PowerupSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/mission/abilities/shield/powerup.tscn")
+spawn_path = NodePath("../Units")

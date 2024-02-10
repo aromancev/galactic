@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dbqyh3ybah34c"]
+
+[ext_resource type="Script" path="res://game/mission/abilities/shoot/ability.gd" id="1_xd0ub"]
+
+[node name="Ability" type="Node3D"]
+script = ExtResource("1_xd0ub")

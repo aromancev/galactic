@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="AbilityResource" load_steps=2 format=3 uid="uid://c2nugelt0bnee"]
+[gd_resource type="Resource" script_class="AbilityResource" load_steps=3 format=3 uid="uid://c2nugelt0bnee"]
 
 [ext_resource type="Script" path="res://game/mission/ability_resource.gd" id="1_fvobw"]
+[ext_resource type="PackedScene" uid="uid://dbqyh3ybah34c" path="res://game/mission/abilities/shoot/ability.tscn" id="1_ihcby"]
 
 [resource]
 script = ExtResource("1_fvobw")
+scene = ExtResource("1_ihcby")

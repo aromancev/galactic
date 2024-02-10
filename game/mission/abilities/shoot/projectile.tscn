@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://dm2pohl4c6qmq"]
+
+[ext_resource type="Script" path="res://game/mission/abilities/shoot/projectile.gd" id="1_thw57"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_frykj"]
+radius = 0.1
+height = 0.2
+radial_segments = 32
+rings = 16
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_y7lk5"]
+radius = 0.1
+
+[node name="Projectile" type="StaticBody3D"]
+script = ExtResource("1_thw57")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_frykj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_y7lk5")

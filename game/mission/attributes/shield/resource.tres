@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AttributeResource" load_steps=2 format=3 uid="uid://ldfqc258qb2o"]
+
+[ext_resource type="Script" path="res://game/mission/attribute_resource.gd" id="1_b1jhj"]
+
+[resource]
+script = ExtResource("1_b1jhj")
+name = "Shield"
+color = Color(0, 0.501961, 0.996078, 1)
+value = 50.0
+min_value = 0.0
+max_value = 50.0
+display_bar = true
