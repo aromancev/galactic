@@ -6,15 +6,18 @@ location like a base or a ship.
 It contains level and units. It orchestrates all hihg-level logic of what is happening.
 """
 
+# peer_id => Unit
 var _players: Dictionary = {}
 
 @onready var _level: Node3D = $Level
 @onready var _unit_spawner: MultiplayerSpawner = $UnitSpawner
 @onready var _units: Node3D = $Units
+@onready var _mode_controls: Control = $UI/ModeControls
 
 
 func _ready() -> void:
 	_unit_spawner.set_spawn_function(_spawn_unit)
+	_mode_controls.visible = is_multiplayer_authority()
 
 	if !is_multiplayer_authority():
 		return
@@ -49,7 +52,7 @@ func _spawn_unit(slug_id: int) -> Unit:
 	var slug := UnitResource.get_slug(slug_id)
 	var resource: UnitResource = load(UnitResource.get_resource_path(slug))
 	var unit := resource.instantiate()
-	unit.position = Vector3(randf_range(-5, 5), 1, randf_range(-5, 5))
+	unit.position = Vector3(randf_range(-5, 5), 1, randf_range(0, 10))
 	unit.spawn.connect(_on_unit_spawn)
 	return unit
 
@@ -64,3 +67,19 @@ func _spawn_shield() -> void:
 
 func _on_unit_spawn(node: Node) -> void:
 	_units.add_child(node)
+
+
+func _on_queue_switch_toggled(is_on: bool) -> void:
+	if !is_multiplayer_authority():
+		return
+
+	for unit: Unit in _players.values():
+		unit.is_queueing_abilities = is_on
+
+
+func _on_start_queue_pressed() -> void:
+	if !is_multiplayer_authority():
+		return
+
+	for unit: Unit in _players.values():
+		unit.ability_queue_start()

@@ -6,4 +6,3 @@
 script = ExtResource("1_64oed")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-debug_enabled = true

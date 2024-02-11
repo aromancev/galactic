@@ -5,17 +5,19 @@ const _SPEED = 5
 @onready var _navigator: NavigationAgent3D = $NavigationAgent3D
 
 
-func use(target: PackedByteArray) -> void:
-	var location := TargetLocation.from_bytes(target)
-	_navigator.set_target_position(location.location)
+func use(target: Variant) -> void:
+	super(target)
+	_navigator.set_target_position(target as Vector3)
 
 
 func terminate() -> void:
 	_navigator.set_target_position(global_position)
+	super()
 
 
 func _physics_process(_delta: float) -> void:
 	if _navigator.is_navigation_finished():
+		done()
 		return
 
 	get_unit().velocity = (

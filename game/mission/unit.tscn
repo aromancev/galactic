@@ -7,6 +7,9 @@
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
+properties/1/path = NodePath(".:is_queueing_abilities")
+properties/1/spawn = true
+properties/1/replication_mode = 2
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_taipi"]
 
@@ -14,6 +17,16 @@ properties/0/replication_mode = 1
 
 [node name="Unit" type="CharacterBody3D" groups=["Units"]]
 script = ExtResource("1_4kj1a")
+label = null
+is_queueing_abilities = null
+
+[node name="UI" type="Node3D" parent="."]
+script = ExtResource("2_624u0")
+
+[node name="Label" type="Label3D" parent="UI"]
+billboard = 1
+double_sided = false
+text = "Label"
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_interval = 3.0
@@ -35,10 +48,7 @@ spawn_path = NodePath("..")
 [node name="AttributeSpawner" type="MultiplayerSpawner" parent="."]
 spawn_path = NodePath("..")
 
-[node name="UI" type="Node3D" parent="."]
-script = ExtResource("2_624u0")
+[node name="OrderSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Orders")
 
-[node name="Label" type="Label3D" parent="UI"]
-billboard = 1
-double_sided = false
-text = "Label"
+[node name="Orders" type="Node" parent="."]

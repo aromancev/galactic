@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="OrderResource" load_steps=3 format=3 uid="uid://msgopic3j24p"]
+
+[ext_resource type="Script" path="res://game/mission/orders/shoot/order.gd" id="1_4w05o"]
+[ext_resource type="Script" path="res://game/mission/order_resource.gd" id="2_wleex"]
+
+[resource]
+script = ExtResource("2_wleex")
+order_script = ExtResource("1_4w05o")

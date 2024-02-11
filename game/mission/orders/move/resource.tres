@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="OrderResource" load_steps=3 format=3 uid="uid://6esfsf3m5qf7"]
+
+[ext_resource type="Script" path="res://game/mission/orders/move/order.gd" id="1_jny0e"]
+[ext_resource type="Script" path="res://game/mission/order_resource.gd" id="1_yu250"]
+
+[resource]
+script = ExtResource("1_yu250")
+order_script = ExtResource("1_jny0e")
