@@ -19,13 +19,14 @@ properties/0/spawn = true
 properties/0/replication_mode = 0
 
 [node name="Powerup" type="Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("1_4efak")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("SphereShape3D_htgsn")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("SphereMesh_r8nwp")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]

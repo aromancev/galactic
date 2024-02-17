@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://dik8wq55lrx01"]
 
-[ext_resource type="PackedScene" uid="uid://c3w0hhmmrkgpt" path="res://game/mission/levels/test/library/floor.gltf" id="1_pobwa"]
+[ext_resource type="PackedScene" uid="uid://tbthf702bd24" path="res://game/mission/levels/test/library/floor.gltf" id="1_pobwa"]
 [ext_resource type="PackedScene" uid="uid://dwmf3h7pljppr" path="res://game/mission/levels/test/library/corridor.gltf" id="2_jiemx"]
 [ext_resource type="PackedScene" uid="uid://cse4lliet256a" path="res://game/mission/levels/test/library/wall.gltf" id="2_jrfgn"]
 [ext_resource type="PackedScene" uid="uid://bvcjcjao7mojn" path="res://game/mission/levels/test/library/corner.gltf" id="4_w14lu"]
@@ -9,7 +9,7 @@
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_srku3"]
 points = PackedVector3Array(-2, 0, -2, -2, 0, 1.99995, 1.99995, 0, -2, 1.99995, 0, 1.99995)
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_htdgk"]
+[sub_resource type="NavigationMesh" id="NavigationMesh_rlimy"]
 vertices = PackedVector3Array(-1.5, 0.5, -1.5, -1.5, 0.5, 1.5, 1.5, 0.5, 1.5, 1.5, 0.5, -1.5)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
@@ -44,7 +44,7 @@ polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 shape = SubResource("ConvexPolygonShape3D_srku3")
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="Floor"]
-navigation_mesh = SubResource("NavigationMesh_htdgk")
+navigation_mesh = SubResource("NavigationMesh_rlimy")
 
 [node name="Wall" parent="." instance=ExtResource("2_jrfgn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)

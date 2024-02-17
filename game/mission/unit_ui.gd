@@ -1,5 +1,8 @@
 class_name UnitUI
 extends Node3D
+"""
+Represents graphical display above [Unit].
+"""
 
 const _LABEL_HEIGHT = 0.3
 const _UNIT_HEIGHT = 2.
@@ -48,4 +51,4 @@ func _update_positions() -> void:
 
 	_label.position.y = pos + _LABEL_HEIGHT / 2
 	pos += _LABEL_HEIGHT
-	position.y = _UNIT_HEIGHT / 2
+	position.y = _UNIT_HEIGHT

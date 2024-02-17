@@ -1,7 +1,10 @@
 class_name ControllerResource
 extends SluggedResource
+"""
+Represents all configuration resources that define a particular [Controller].
+"""
 
-@export var scene: PackedScene
+@export var controller_script: Script
 
 static var _slugs := Slugs.new("res://game/mission/controllers")
 
@@ -20,7 +23,3 @@ static func get_slug(slug_id: int) -> String:
 
 static func get_resource_path(slug: String) -> String:
 	return _slugs.get_resource_path(slug)
-
-
-func instantiate() -> Controller:
-	return scene.instantiate()

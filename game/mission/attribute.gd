@@ -1,5 +1,8 @@
 class_name Attribute
 extends MultiplayerSynchronizer
+"""
+Represents a changing value sucn as health or speed
+"""
 
 signal changed
 

@@ -1,7 +1,10 @@
 class_name AbilityResource
 extends SluggedResource
+"""
+Represents all configuration resources that define a particular [Ability].
+"""
 
-@export var scene: PackedScene
+@export var ability_script: Script
 
 static var _slugs := Slugs.new("res://game/mission/abilities")
 
@@ -20,9 +23,3 @@ static func get_slug(slug_id: int) -> String:
 
 static func get_resource_path(slug: String) -> String:
 	return _slugs.get_resource_path(slug)
-
-
-func instantiate() -> Ability:
-	var ability: Ability = scene.instantiate()
-	ability.resource = self
-	return ability

@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://0gq1kq01h6tl"]
+[gd_scene load_steps=2 format=3 uid="uid://c50q16lx8s6rx"]
 
 [ext_resource type="Script" path="res://game/mission/abilities/shield/ability.gd" id="1_jlufq"]
 

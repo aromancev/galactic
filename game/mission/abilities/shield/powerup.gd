@@ -10,6 +10,7 @@ func _on_body_entered(body: Node3D) -> void:
 
 	var unit: Unit = body
 	unit.add_ability("shield")
+	unit.set_attribute_value("shield", unit.get_attribute_max_value("shield"))
 	if is_multiplayer_authority():
 		queue_free()
 		collected.emit()

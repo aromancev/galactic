@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://wujtc7forwi6"]
-
-[ext_resource type="Script" path="res://game/mission/abilities/navigate/ability.gd" id="1_64oed"]
-
-[node name="AbilityNavigate" type="Node3D"]
-script = ExtResource("1_64oed")
-
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
