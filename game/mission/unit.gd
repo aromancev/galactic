@@ -20,6 +20,11 @@ signal spawn(node: Node)
 		if _ui:
 			_ui.label = v
 
+@export var is_queueing_abilities: bool = false:
+	set(v):
+		is_queueing_abilities = v
+		ability_queue_clear()
+
 # Array[slug, authority_id] => [Controller].
 var _controllers: Dictionary = {}
 # Slug => [Ability].
@@ -29,6 +34,8 @@ var _attributes: Dictionary = {}
 
 @onready var _controller_spawner: MultiplayerSpawner = $ControllerSpawner
 @onready var _ability_spawner: MultiplayerSpawner = $AbilitySpawner
+@onready var _order_spawner: MultiplayerSpawner = $OrderSpawner
+@onready var _orders: Node = $Orders
 @onready var _attribute_spawner: MultiplayerSpawner = $AttributeSpawner
 @onready var _collider: CollisionShape3D = $CollisionShape3D
 @onready var _ui: UnitUI = $UI
@@ -83,11 +90,12 @@ func remove_ability(slug: String) -> void:
 
 # Uses a [Ability]. Should only be called by the authority as RPC but can be called as a regular
 # function by a [Controller], for example.
-func use_ability(slug: String, target: Target) -> void:
+func use_ability(ability_slug: String, _order_slug: String, target: Variant) -> void:
 	if !is_multiplayer_authority():
 		return
 
-	_use_ability.rpc(AbilityResource.get_slug_id(slug), target.to_bytes())
+	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)
+	_use_ability.rpc(ability_slug_id, target)
 
 
 # Terminates a [Ability]. Should only be called by the authority as RPC but can be called as a
@@ -97,6 +105,45 @@ func terminate_ability(slug: String) -> void:
 		return
 
 	_terminate_ability.rpc(AbilityResource.get_slug_id(slug))
+
+
+func queue_ability(ability_slug: String, order_slug: String, target: Variant) -> void:
+	if !is_multiplayer_authority():
+		return
+
+	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)
+	var order_slug_id := OrderResource.get_slug_id(order_slug)
+	_order_spawner.spawn([ability_slug_id, order_slug_id, target])
+
+
+func ability_queue_start() -> void:
+	if !is_multiplayer_authority():
+		return
+
+	var oldest := _get_order(0)
+	if !oldest:
+		return
+
+	_use_ability.rpc(AbilityResource.get_slug_id(oldest.ability_slug), oldest.target)
+
+
+func ability_queue_clear() -> void:
+	if !is_multiplayer_authority():
+		return
+
+	for q in _orders.get_children():
+		q.queue_free()
+
+
+func ability_queue_pop() -> void:
+	if !is_multiplayer_authority():
+		return
+
+	var oldest := _get_order(0)
+	if !oldest:
+		return
+
+	oldest.queue_free()
 
 
 func add_attribute(slug: String) -> void:
@@ -199,6 +246,7 @@ func _ready() -> void:
 	_controller_spawner.despawned.connect(_despawn_controller)
 	_ability_spawner.set_spawn_function(_spawn_ability)
 	_ability_spawner.despawned.connect(_despawn_ability)
+	_order_spawner.set_spawn_function(_spawn_order)
 	_attribute_spawner.set_spawn_function(_spawn_attribute)
 	_attribute_spawner.despawned.connect(_despawn_attribute)
 
@@ -219,26 +267,6 @@ func _ready() -> void:
 		var slug_id := AttributeResource.get_slug_id(slug)
 		var attribute: Attribute = _attribute_spawner.spawn(slug_id)
 		attribute.resource = res
-
-
-@rpc("authority", "call_local", "reliable")
-func _use_ability(slug_id: int, target: PackedByteArray) -> void:
-	var slug := AbilityResource.get_slug(slug_id)
-	var ability: Ability = _abilities.get(slug)
-	if !ability:
-		return
-
-	ability.use(target)
-
-
-@rpc("authority", "call_local", "reliable")
-func _terminate_ability(slug_id: int) -> void:
-	var slug := AbilityResource.get_slug(slug_id)
-	var ability: Ability = _abilities.get(slug)
-	if !ability:
-		return
-
-	ability.terminate()
 
 
 func _spawn_controller(key: PackedInt32Array) -> Controller:
@@ -268,11 +296,15 @@ func _despawn_controller(controller: Controller) -> void:
 
 func _remove_controller(slug: String, authority_id: int) -> void:
 	var key := [slug, authority_id]
+	_controllers.erase(key)
+
+	if !is_multiplayer_authority():
+		return
+
 	var controller: Controller = _controllers.get(key)
 	if !controller:
 		return
 
-	_controllers.erase(key)
 	controller.queue_free()
 
 
@@ -284,7 +316,8 @@ func _spawn_ability(slug_id: int) -> Ability:
 		return
 
 	var ability: Ability = res.instantiate()
-	ability.spawn.connect(_on_ability_spawn)
+	ability.spawn.connect(_on_spawn)
+	ability.used.connect(_on_ability_used.bind(slug))
 
 	_abilities[slug] = ability
 	return ability
@@ -298,16 +331,111 @@ func _despawn_ability(ability: Ability) -> void:
 
 
 func _remove_ability(slug: String) -> void:
+	_abilities.erase(slug)
+
+	if !is_multiplayer_authority():
+		return
+
 	var ability: Ability = _abilities.get(slug)
 	if !ability:
 		return
 
-	_abilities.erase(slug)
 	ability.queue_free()
+	for order: Order in _orders.get_children():
+		if order.ability_slug == slug:
+			order.queue_free()
 
 
-func _on_ability_spawn(node: Node) -> void:
+@rpc("authority", "call_local", "reliable")
+func _use_ability(ability_slug_id: int, target: Variant) -> void:
+	var slug := AbilityResource.get_slug(ability_slug_id)
+	var ability: Ability = _abilities.get(slug)
+	if !ability:
+		return
+
+	ability.use(target)
+
+
+@rpc("authority", "call_local", "reliable")
+func _terminate_ability(slug_id: int) -> void:
+	var slug := AbilityResource.get_slug(slug_id)
+	var ability: Ability = _abilities.get(slug)
+	if !ability:
+		return
+
+	ability.terminate()
+
+
+func _on_spawn(node: Node) -> void:
 	spawn.emit(node)
+
+
+func _on_ability_used(_target: Variant, slug: String) -> void:
+	if !is_multiplayer_authority():
+		return
+
+	var oldest: Order = _get_order(0)
+	var next: Order = _get_order(1)
+
+	if !oldest:
+		return
+
+	if oldest.ability_slug != slug:
+		return
+
+	# Removing order child immediately to avoid infinite loop if ability is done within one frame.
+	oldest.free()
+
+	if !next:
+		return
+
+	var ability: Ability = _abilities.get(next.ability_slug)
+	if !ability:
+		push_error("Ability form queue with slug = %s does not exist." % next.ability_slug)
+		next.queue_free()
+		return
+
+	_use_ability.rpc(AbilityResource.get_slug_id(next.ability_slug), next.target)
+
+
+func _get_order(index: int) -> Order:
+	if _orders.get_child_count() <= index:
+		return null
+
+	return _orders.get_child(index)
+
+
+func _get_last_order() -> Order:
+	if _orders.get_child_count() == 0:
+		return null
+	return _get_order(_orders.get_child_count() - 1)
+
+
+func _spawn_order(args: Array) -> Order:
+	var ability_slug_id: int = args[0]
+	var order_slug_id: int = args[1]
+	var target: Variant = args[2]
+
+	var order_slug := OrderResource.get_slug(order_slug_id)
+	var ability_slug := AbilityResource.get_slug(ability_slug_id)
+	var res: OrderResource = load(OrderResource.get_resource_path(order_slug))
+	if !res:
+		push_error("Can't find Order with slug_id =  %s" % order_slug)
+		return
+
+	var order := Order.new()
+	order.set_script(res.order_script)
+	order.spawn.connect(_on_spawn)
+
+	var last_order := _get_last_order()
+	if last_order:
+		order.unit_position = last_order.get_next_unit_position()
+	else:
+		order.unit_position = global_position
+	order.ability_slug = ability_slug
+	order.resource = res
+	order.target = target
+	return order
 
 
 func _spawn_attribute(slug_id: int) -> Attribute:
@@ -335,13 +463,17 @@ func _despawn_attribute(attibute: Attribute) -> void:
 
 
 func _remove_attribute(slug: String) -> void:
+	_attributes.erase(slug)
+	_ui.remove_bar(slug)
+
+	if !is_multiplayer_authority():
+		return
+
 	var attribute: Attribute = _attributes.get(slug)
 	if !attribute:
 		return
 
-	_attributes.erase(slug)
 	attribute.queue_free()
-	_ui.remove_bar(slug)
 
 
 func _on_attribute_changed(slug: String) -> void:

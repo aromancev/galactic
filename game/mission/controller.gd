@@ -9,8 +9,21 @@ what it CAN do. It MUST NOT define any new behaviour for a [Unit] like an [Abili
 """
 
 
-func use_ability(slug: String, target: Target) -> void:
-	_use_ability.rpc(AbilityResource.get_slug_id(slug), target.to_bytes())
+func use_ability(ability_slug: String, order_slug: String, target: Variant) -> void:
+	var authority := _get_unit().get_multiplayer_authority()
+	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)
+	var order_slug_id := OrderResource.get_slug_id(order_slug)
+	_use_ability.rpc_id(authority, ability_slug_id, order_slug_id, target)
+
+
+func ability_queue_pop() -> void:
+	var authority := _get_unit().get_multiplayer_authority()
+	_ability_queue_pop.rpc_id(authority)
+
+
+func ability_queue_clear() -> void:
+	var authority := _get_unit().get_multiplayer_authority()
+	_ability_queue_clear.rpc_id(authority)
 
 
 func set_label(label: String) -> void:
@@ -30,8 +43,40 @@ func _get_unit() -> Unit:
 # It is important to call RPC on the [Controller] object and not on the [Unit] object because
 # of multiplayer authority.
 @rpc("authority", "call_local", "reliable")
-func _use_ability(slug_id: int, target: PackedByteArray) -> void:
-	# Calling a private method because other ways to prevent undesired [Unit] calls are even more
-	# ugly (like creating proxy objects).
-	# gdlint:ignore = private-method-call
-	_get_unit()._use_ability(slug_id, target)
+func _use_ability(ability_slug_id: int, order_slug_id: int, target: Variant) -> void:
+	if !_get_unit().is_multiplayer_authority():
+		return
+
+	var ability_slug := AbilityResource.get_slug(ability_slug_id)
+	var order_slug := OrderResource.get_slug(order_slug_id)
+
+	if _get_unit().is_queueing_abilities:
+		_get_unit().queue_ability(ability_slug, order_slug, target)
+	else:
+		_get_unit().use_ability(ability_slug, order_slug, target)
+
+
+# It is important to call RPC on the [Controller] object and not on the [Unit] object because
+# of multiplayer authority.
+@rpc("authority", "call_local", "reliable")
+func _ability_queue_pop() -> void:
+	if !_get_unit().is_multiplayer_authority():
+		return
+
+	if !_get_unit().is_queueing_abilities:
+		return
+
+	_get_unit().ability_queue_pop()
+
+
+# It is important to call RPC on the [Controller] object and not on the [Unit] object because
+# of multiplayer authority.
+@rpc("authority", "call_local", "reliable")
+func _ability_queue_clear() -> void:
+	if !_get_unit().is_multiplayer_authority():
+		return
+
+	if !_get_unit().is_queueing_abilities:
+		return
+
+	_get_unit().ability_queue_clear()

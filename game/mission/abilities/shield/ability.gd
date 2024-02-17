@@ -2,7 +2,12 @@ extends Ability
 
 
 func _ready() -> void:
+	super()
 	get_unit().add_attribute("shield")
+
+
+func use(_t: Variant) -> void:
+	done()
 
 
 func before_attribute_increment(slug: String, delta: float) -> float:

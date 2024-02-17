@@ -7,11 +7,15 @@ func _input(event: InputEvent) -> void:
 		var target: Variant = MissionCamera.get_active().get_level_cursor_projection()
 		if target == null:
 			return
-		use_ability("navigate", TargetLocation.new(target as Vector3))
+
+		use_ability("navigate", "move", target)
 
 	if event.is_action_pressed("select"):
 		var target := MissionCamera.get_active().get_cursor_projection_at(0)
-		use_ability("shoot", TargetLocation.new(target))
+		use_ability("shoot", "shoot", target)
+
+	if event.is_action_pressed("orders_clear"):
+		ability_queue_clear()
 
 
 func _ready() -> void:

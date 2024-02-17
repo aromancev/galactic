@@ -21,8 +21,38 @@ spawn_limit = 1
 spawn_path = NodePath("../Units")
 
 [node name="Units" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.182, 0, 7.312)
 
 [node name="PowerupSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://game/mission/abilities/shield/powerup.tscn")
 spawn_path = NodePath("../Units")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ModeControls" type="PanelContainer" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -40.0
+offset_right = 50.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/ModeControls"]
+layout_mode = 2
+
+[node name="StartQueue" type="Button" parent="UI/ModeControls/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Start"
+
+[node name="QueueSwitch" type="CheckButton" parent="UI/ModeControls/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Queue"
+
+[connection signal="pressed" from="UI/ModeControls/HBoxContainer/StartQueue" to="." method="_on_start_queue_pressed"]
+[connection signal="toggled" from="UI/ModeControls/HBoxContainer/QueueSwitch" to="." method="_on_queue_switch_toggled"]
