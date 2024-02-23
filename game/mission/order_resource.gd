@@ -1,5 +1,8 @@
 class_name OrderResource
 extends SluggedResource
+"""
+Represents all configuration resources that define a particular [Order].
+"""
 
 @export var order_script: Script
 

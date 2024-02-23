@@ -29,7 +29,11 @@ func _physics_process(delta: float) -> void:
 		if unit.get_attribute_value("health") == 0:
 			unit.set_attribute_value("health", unit.get_attribute_max_value("health"))
 
-		unit.add_child(Knockback.new(unit, global_position.direction_to(unit.global_position)))
+		var impulse := position.direction_to(unit.position)
+		impulse.y = 0
+		impulse = impulse.normalized() * 5
+		impulse.y = 2
+		unit.add_impulse(impulse)
 		break
 
 	queue_free()

@@ -36,6 +36,7 @@ func _ready() -> void:
 func _spawn_player(peer_id: int, _player: Player) -> void:
 	var unit: Unit = _unit_spawner.spawn(UnitResource.get_slug_id("test"))
 	unit.add_controller("player", peer_id)
+	unit.add_to_team(0)
 	_players[peer_id] = unit
 
 
@@ -52,7 +53,7 @@ func _spawn_unit(slug_id: int) -> Unit:
 	var slug := UnitResource.get_slug(slug_id)
 	var resource: UnitResource = load(UnitResource.get_resource_path(slug))
 	var unit := resource.instantiate()
-	unit.position = Vector3(randf_range(-5, 5), 1, randf_range(0, 10))
+	unit.position = Vector3(randf_range(-5, 5), 0, randf_range(0, 10))
 	unit.spawn.connect(_on_unit_spawn)
 	return unit
 
@@ -60,7 +61,7 @@ func _spawn_unit(slug_id: int) -> Unit:
 func _spawn_shield() -> void:
 	var Scene := preload("res://game/mission/abilities/shield/powerup.tscn")
 	var shield: ShieldPowerup = Scene.instantiate()
-	shield.position = Vector3(randf_range(-5, 5), 0.5, randf_range(-5, 5))
+	shield.position = Vector3(randf_range(-5, 5), 0, randf_range(0, 10))
 	shield.collected.connect(_spawn_shield)
 	_units.add_child(shield, true)
 

@@ -2,7 +2,7 @@ extends Ability
 
 const _SPEED = 5
 
-@onready var _navigator: NavigationAgent3D = $NavigationAgent3D
+var _navigator: UnitNavigator
 
 
 func use(target: Variant) -> void:
@@ -10,17 +10,25 @@ func use(target: Variant) -> void:
 	_navigator.set_target_position(target as Vector3)
 
 
-func terminate() -> void:
-	_navigator.set_target_position(global_position)
-	super()
+func get_unit_velocity() -> Vector3:
+	if !is_using() or !get_unit().is_on_floor():
+		return Vector3.ZERO
 
-
-func _physics_process(_delta: float) -> void:
 	if _navigator.is_navigation_finished():
 		done()
-		return
+		return Vector3.ZERO
 
-	get_unit().velocity = (
-		get_unit().global_position.direction_to(_navigator.get_next_path_position()) * _SPEED
-	)
-	get_unit().move_and_slide()
+	return _navigator.get_unit_velocity(get_unit(), _SPEED)
+
+
+func _ready() -> void:
+	super()
+
+	_navigator = UnitNavigator.new()
+	get_unit().add_child(_navigator)
+
+
+func _exit_tree() -> void:
+	_navigator.queue_free()
+
+	super()

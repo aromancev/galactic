@@ -1,5 +1,11 @@
 class_name Order
 extends Node
+"""
+Represents intention to use [Ability]. Contains information about what ability to use and on what
+target. It can spawn child nodes to show visuals (e.g. a point where [Unit] will move).
+
+[Unit] stores [Order]s in a queue for execution as child nodes.
+"""
 
 signal spawn(node: Node)
 
@@ -12,6 +18,8 @@ var unit_position: Vector3
 var _spawned: Array[Node]
 
 
+# Should return the position where the [Unit] will be after using the ability. It is necessary to
+# correctly display following orders.
 func get_next_unit_position() -> Vector3:
 	return unit_position
 

@@ -1,5 +1,5 @@
 class_name Controller
-extends Node3D
+extends Node
 """
 Represents a way to control [Unit] behaviour.
 

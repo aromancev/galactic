@@ -1,6 +1,9 @@
 @tool
 class_name AttributeBar
 extends MeshInstance3D
+"""
+Represents a visual UI for a particular [Attribute] that [Unit] can have.
+"""
 
 @export var color_from: Color = Color.BLACK:
 	get:

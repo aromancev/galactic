@@ -4,12 +4,18 @@
 [ext_resource type="Script" path="res://game/mission/unit_ui.gd" id="2_624u0"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_aqq1m"]
-properties/0/path = NodePath(".:position")
+properties/0/path = NodePath(".:is_queueing_abilities")
 properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath(".:is_queueing_abilities")
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:_position_sync")
 properties/1/spawn = true
 properties/1/replication_mode = 2
+properties/2/path = NodePath(".:_impulse_sync")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:_teams")
+properties/3/spawn = true
+properties/3/replication_mode = 2
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_taipi"]
 
@@ -17,10 +23,9 @@ properties/1/replication_mode = 2
 
 [node name="Unit" type="CharacterBody3D" groups=["Units"]]
 script = ExtResource("1_4kj1a")
-label = null
-is_queueing_abilities = null
 
 [node name="UI" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
 script = ExtResource("2_624u0")
 
 [node name="Label" type="Label3D" parent="UI"]
@@ -33,9 +38,11 @@ replication_interval = 3.0
 replication_config = SubResource("SceneReplicationConfig_aqq1m")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_taipi")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_djwmv")
 skeleton = NodePath("")
 

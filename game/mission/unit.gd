@@ -11,7 +11,13 @@ that define how a particular unit should look and behave like [Ability], [Contro
 
 signal spawn(node: Node)
 
+const _MAX_IMPULSE_HORIZONTAL = 15
+const _MAX_IMPULSE_VERTICAL = 5
+const _HORIZONTAL_DRAG = 10
+const _GRAVITY = 9.8
+
 @export var resource: UnitResource = UnitResource.new()
+
 @export var label: String:
 	get:
 		return label
@@ -20,10 +26,26 @@ signal spawn(node: Node)
 		if _ui:
 			_ui.label = v
 
+# Bit field that stores all teams that the Unit is in.
+@export var _teams: int
 @export var is_queueing_abilities: bool = false:
 	set(v):
 		is_queueing_abilities = v
 		ability_queue_clear()
+
+@export var _position_sync: Vector3:
+	set(v):
+		_position_sync = v
+		if !is_multiplayer_authority():
+			position = v
+
+@export var _impulse_sync: Vector3:
+	set(v):
+		_impulse_sync = v
+		if !is_multiplayer_authority():
+			_impulse = v
+
+var _impulse: Vector3
 
 # Array[slug, authority_id] => [Controller].
 var _controllers: Dictionary = {}
@@ -44,6 +66,48 @@ var _attributes: Dictionary = {}
 func get_radius() -> float:
 	var capsule: CapsuleShape3D = _collider.shape
 	return capsule.radius
+
+
+func add_to_team(team: int) -> void:
+	assert(team >= 0 and team < 64, "Exceeded team number range [0, 63].")
+	_teams |= 1 << team
+
+
+func remove_from_team(team: int) -> void:
+	assert(team >= 0 and team < 64, "Exceeded team number range [0, 63].")
+	_teams &= ~(1 << team)
+
+
+func get_teams() -> int:
+	return _teams
+
+
+func is_on_same_team(other: Unit) -> bool:
+	return bool(other.get_teams() & _teams)
+
+
+func add_impulse(delta: Vector3) -> void:
+	if !is_multiplayer_authority():
+		return
+
+	if !delta:
+		return
+
+	_impulse += delta
+
+	# Limiting horizontal impulse.
+	var xz := _impulse
+	xz.y = 0
+	if xz.length() > _MAX_IMPULSE_HORIZONTAL:
+		xz = xz.normalized() * _MAX_IMPULSE_HORIZONTAL
+	_impulse.x = xz.x
+	_impulse.z = xz.z
+
+	# Limiting vertical impulse.
+	_impulse.y = clamp(delta.y, 0, _MAX_IMPULSE_VERTICAL)
+
+	_position_sync = position
+	_impulse_sync = _impulse
 
 
 # Creates and adds a new [Controller] to the unit. The controller will be replicated to all
@@ -95,6 +159,7 @@ func use_ability(ability_slug: String, _order_slug: String, target: Variant) -> 
 		return
 
 	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)
+	_position_sync = position
 	_use_ability.rpc(ability_slug_id, target)
 
 
@@ -253,6 +318,8 @@ func _ready() -> void:
 	if !is_multiplayer_authority():
 		return
 
+	_position_sync = position
+
 	# Spawning dynamic components for all peers. It is tempting to do this locally on every peer
 	# to save traffic but it is a bad idea because dynamic components and can be removed at any
 	# time. This means peers that join later should receive a modified list of components.
@@ -269,6 +336,48 @@ func _ready() -> void:
 		attribute.resource = res
 
 
+func _physics_process(delta: float) -> void:
+	var prevoius_impulse := _impulse
+	velocity = _impulse + _get_ability_velocity()
+	var collided := move_and_slide()
+	# Don't fly up if hit a wall or something.
+	if collided and _impulse.y > 0:
+		_impulse.y = 0
+
+	if is_on_floor() and _impulse.y <= _GRAVITY * delta:
+		_impulse.y = 0
+	else:
+		_impulse.y -= _GRAVITY * delta
+
+	var horizontal_impulse := Vector3(_impulse.x, 0, _impulse.z)
+	if horizontal_impulse.length() <= _HORIZONTAL_DRAG * delta:
+		_impulse.x = 0
+		_impulse.z = 0
+	else:
+		horizontal_impulse -= horizontal_impulse.normalized() * _HORIZONTAL_DRAG * delta
+		_impulse.x = horizontal_impulse.x
+		_impulse.z = horizontal_impulse.z
+
+	if !is_multiplayer_authority():
+		return
+
+	if prevoius_impulse != Vector3.ZERO and _impulse == Vector3.ZERO:
+		# Stopped moving.
+		_impulse_sync = _impulse
+		_position_sync = position
+
+
+# Only one ability is allowed to move unit at a time. Ability that was added earlier will
+# have priority.
+func _get_ability_velocity() -> Vector3:
+	for a: Ability in _abilities.values():
+		var v := a.get_unit_velocity()
+		if v != Vector3.ZERO:
+			return v
+
+	return Vector3.ZERO
+
+
 func _spawn_controller(key: PackedInt32Array) -> Controller:
 	var slug_id := key[0]
 	var authority_id := key[1]
@@ -279,7 +388,8 @@ func _spawn_controller(key: PackedInt32Array) -> Controller:
 		push_error("Can't find Controller with slug_id = %s" % slug_id)
 		return
 
-	var controller := res.instantiate()
+	var controller := Controller.new()
+	controller.set_script(res.controller_script)
 	controller.set_multiplayer_authority(authority_id)
 	_controllers[[slug, authority_id]] = controller
 	return controller
@@ -296,15 +406,16 @@ func _despawn_controller(controller: Controller) -> void:
 
 func _remove_controller(slug: String, authority_id: int) -> void:
 	var key := [slug, authority_id]
-	_controllers.erase(key)
 
 	if !is_multiplayer_authority():
+		_controllers.erase(key)
 		return
 
 	var controller: Controller = _controllers.get(key)
 	if !controller:
 		return
 
+	_controllers.erase(key)
 	controller.queue_free()
 
 
@@ -315,7 +426,9 @@ func _spawn_ability(slug_id: int) -> Ability:
 		push_error("Can't find Ability with slug_id =  %s" % slug_id)
 		return
 
-	var ability: Ability = res.instantiate()
+	var ability: Ability = Ability.new()
+	ability.set_script(res.ability_script)
+	ability.resource = res
 	ability.spawn.connect(_on_spawn)
 	ability.used.connect(_on_ability_used.bind(slug))
 
@@ -331,15 +444,15 @@ func _despawn_ability(ability: Ability) -> void:
 
 
 func _remove_ability(slug: String) -> void:
-	_abilities.erase(slug)
-
 	if !is_multiplayer_authority():
+		_abilities.erase(slug)
 		return
 
 	var ability: Ability = _abilities.get(slug)
 	if !ability:
 		return
 
+	_abilities.erase(slug)
 	ability.queue_free()
 	for order: Order in _orders.get_children():
 		if order.ability_slug == slug:
@@ -353,7 +466,7 @@ func _use_ability(ability_slug_id: int, target: Variant) -> void:
 	if !ability:
 		return
 
-	ability.use(target)
+	ability.call_deferred("use", target)
 
 
 @rpc("authority", "call_local", "reliable")
@@ -374,6 +487,8 @@ func _on_ability_used(_target: Variant, slug: String) -> void:
 	if !is_multiplayer_authority():
 		return
 
+	_position_sync = position
+
 	var oldest: Order = _get_order(0)
 	var next: Order = _get_order(1)
 
@@ -383,7 +498,7 @@ func _on_ability_used(_target: Variant, slug: String) -> void:
 	if oldest.ability_slug != slug:
 		return
 
-	# Removing order child immediately to avoid infinite loop if ability is done within one frame.
+	# Free immediately to avoid infinite loop if ability is done within one frame.
 	oldest.free()
 
 	if !next:
@@ -455,24 +570,26 @@ func _spawn_attribute(slug_id: int) -> Attribute:
 	return attribute
 
 
-func _despawn_attribute(attibute: Attribute) -> void:
+func _despawn_attribute(attribute: Attribute) -> void:
+	print(attribute)
 	for slug: String in _attributes:
-		if _attributes[slug] == attibute:
+		if _attributes[slug] == attribute:
 			_remove_attribute(slug)
 			return
 
 
 func _remove_attribute(slug: String) -> void:
-	_attributes.erase(slug)
 	_ui.remove_bar(slug)
 
 	if !is_multiplayer_authority():
+		_attributes.erase(slug)
 		return
 
 	var attribute: Attribute = _attributes.get(slug)
 	if !attribute:
 		return
 
+	_attributes.erase(slug)
 	attribute.queue_free()
 
 

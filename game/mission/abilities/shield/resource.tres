@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="AbilityResource" load_steps=3 format=3 uid="uid://dnu3uhqa47qy7"]
 
-[ext_resource type="PackedScene" uid="uid://0gq1kq01h6tl" path="res://game/mission/abilities/shield/ability.tscn" id="1_ph2tj"]
+[ext_resource type="Script" path="res://game/mission/abilities/shield/ability.gd" id="1_62ngd"]
 [ext_resource type="Script" path="res://game/mission/ability_resource.gd" id="1_ywkbp"]
 
 [resource]
 script = ExtResource("1_ywkbp")
-scene = ExtResource("1_ph2tj")
+ability_script = ExtResource("1_62ngd")

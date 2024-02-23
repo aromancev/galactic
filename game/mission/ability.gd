@@ -1,10 +1,7 @@
 class_name Ability
-extends Node3D
+extends Node
 """
-Represents [Unit] behaviour.
-
-[Ability] implementationa can use any engine callbacks like "_process" or "_physics_process"
-to execute their logic.
+Represents [Unit] behaviour such as move or attack.
 
 WARNING: Extending classes should never free themselves.
 Use [method Ability.remove_self] instead.
@@ -12,6 +9,7 @@ Use [method Ability.remove_self] instead.
 
 signal spawn(node: Node)
 signal used(target: Variant)
+signal terminated
 
 @export var resource: AbilityResource
 
@@ -30,7 +28,16 @@ func use(target: Variant) -> void:
 # It is responsibility of the implementation to verify that it is not active after this call.
 # IMPORTANT: Extending classes should always call `super` in the end.
 func terminate() -> void:
-	done()
+	if !_is_using:
+		return
+
+	_is_using = false
+	_target = null
+	terminated.emit()
+
+
+func get_unit_velocity() -> Vector3:
+	return Vector3.ZERO
 
 
 # Called before incrementing an attribute. Must return a new delta that should be propagated to the
@@ -38,6 +45,10 @@ func terminate() -> void:
 # Useful to override attribute changes, for example to reduce incoming damage.
 func before_attribute_increment(_slug: String, delta: float) -> float:
 	return delta
+
+
+func prepare(seconds: float) -> void:
+	await get_tree().create_timer(seconds).timeout
 
 
 func is_using() -> bool:
@@ -71,6 +82,7 @@ func done() -> void:
 
 # IMPORTANT: Extending classes should always call `super` in the beginning.
 func _ready() -> void:
+	set_physics_process(false)
 	set_process_input(false)
 	set_process_shortcut_input(false)
 	set_process_unhandled_input(false)
@@ -79,5 +91,6 @@ func _ready() -> void:
 
 # Just in case an ability frees itself this will make sure authority removes it from the
 # `_abilities` Dictionary as well.
+# IMPORTANT: Extending classes should always call `super` in the end.
 func _exit_tree() -> void:
 	remove_self()
