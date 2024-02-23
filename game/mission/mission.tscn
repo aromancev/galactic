@@ -47,12 +47,30 @@ layout_mode = 2
 [node name="StartQueue" type="Button" parent="UI/ModeControls/HBoxContainer"]
 layout_mode = 2
 focus_mode = 0
-text = "Start"
+text = "Start Queue"
 
 [node name="QueueSwitch" type="CheckButton" parent="UI/ModeControls/HBoxContainer"]
 layout_mode = 2
 focus_mode = 0
 text = "Queue"
 
+[node name="SpawnEnemies" type="Button" parent="UI/ModeControls/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Spawn enemies"
+
+[node name="ClearEnemies" type="Button" parent="UI/ModeControls/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+text = "Clear enemies"
+
+[node name="NumEnemies" type="LineEdit" parent="UI/ModeControls/HBoxContainer"]
+layout_mode = 2
+focus_mode = 1
+placeholder_text = "nr. enemies"
+expand_to_text_length = true
+
 [connection signal="pressed" from="UI/ModeControls/HBoxContainer/StartQueue" to="." method="_on_start_queue_pressed"]
 [connection signal="toggled" from="UI/ModeControls/HBoxContainer/QueueSwitch" to="." method="_on_queue_switch_toggled"]
+[connection signal="pressed" from="UI/ModeControls/HBoxContainer/SpawnEnemies" to="." method="_on_spawn_enemies_pressed"]
+[connection signal="pressed" from="UI/ModeControls/HBoxContainer/ClearEnemies" to="." method="_on_clear_enemies_pressed"]

@@ -12,6 +12,8 @@ rings = 16
 radius = 0.1
 
 [node name="Projectile" type="StaticBody3D"]
+collision_layer = 8
+collision_mask = 11
 script = ExtResource("1_thw57")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

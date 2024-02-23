@@ -13,6 +13,7 @@ var _players: Dictionary = {}
 @onready var _unit_spawner: MultiplayerSpawner = $UnitSpawner
 @onready var _units: Node3D = $Units
 @onready var _mode_controls: Control = $UI/ModeControls
+@onready var _num_enemies: LineEdit = $UI/ModeControls/HBoxContainer/NumEnemies
 
 
 func _ready() -> void:
@@ -40,6 +41,13 @@ func _spawn_player(peer_id: int, _player: Player) -> void:
 	_players[peer_id] = unit
 
 
+func _spawn_enemy() -> void:
+	var unit: Unit = _unit_spawner.spawn(UnitResource.get_slug_id("test"))
+	unit.add_controller("test", get_multiplayer_authority())
+	unit.add_to_team(1)
+	unit.add_to_group("enemies")
+
+
 func _despawn_player(peer_id: int) -> void:
 	var unit: Unit = _players.get(peer_id)
 	if !unit:
@@ -53,7 +61,7 @@ func _spawn_unit(slug_id: int) -> Unit:
 	var slug := UnitResource.get_slug(slug_id)
 	var resource: UnitResource = load(UnitResource.get_resource_path(slug))
 	var unit := resource.instantiate()
-	unit.position = Vector3(randf_range(-5, 5), 0, randf_range(0, 10))
+	unit.position = _get_random_point_on_test_level()
 	unit.spawn.connect(_on_unit_spawn)
 	return unit
 
@@ -61,7 +69,7 @@ func _spawn_unit(slug_id: int) -> Unit:
 func _spawn_shield() -> void:
 	var Scene := preload("res://game/mission/abilities/shield/powerup.tscn")
 	var shield: ShieldPowerup = Scene.instantiate()
-	shield.position = Vector3(randf_range(-5, 5), 0, randf_range(0, 10))
+	shield.position = _get_random_point_on_test_level()
 	shield.collected.connect(_spawn_shield)
 	_units.add_child(shield, true)
 
@@ -84,3 +92,23 @@ func _on_start_queue_pressed() -> void:
 
 	for unit: Unit in _players.values():
 		unit.ability_queue_start()
+
+
+func _get_random_point_on_test_level() -> Vector3:
+	const _TEST_LEVEL_WIDTH = 16. * 4
+
+	var p := Vector3.ZERO
+	p.x = randf_range(-_TEST_LEVEL_WIDTH / 2, _TEST_LEVEL_WIDTH / 2)
+	p.z = randf_range(-_TEST_LEVEL_WIDTH / 2, _TEST_LEVEL_WIDTH / 2)
+	return p
+
+
+func _on_spawn_enemies_pressed() -> void:
+	_num_enemies.release_focus()
+	for i in int(_num_enemies.text):
+		_spawn_enemy()
+
+
+func _on_clear_enemies_pressed() -> void:
+	for e in get_tree().get_nodes_in_group("enemies"):
+		e.queue_free()

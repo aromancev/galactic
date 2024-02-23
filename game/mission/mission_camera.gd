@@ -10,6 +10,7 @@ to target a [Ability], for example.
 
 const _MOVE_SPEED = 40
 const _TARGET_RAY_LENGTH = 100
+const _LEVEL_COLLISION_LAYER = 0
 
 var _level_cursor_projection: Variant
 
@@ -39,8 +40,11 @@ func _init() -> void:
 	_active = self
 
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	_move(delta)
+
+
+func _physics_process(_delta: float) -> void:
 	_update_level_cursor_projection()
 
 
@@ -67,7 +71,7 @@ func _update_level_cursor_projection() -> void:
 	var origin := project_ray_origin(mouse_pos)
 	var end := origin + project_ray_normal(mouse_pos) * _TARGET_RAY_LENGTH
 	var query := PhysicsRayQueryParameters3D.create(origin, end)
-	query.collide_with_areas = true
+	query.collision_mask = 1 << _LEVEL_COLLISION_LAYER
 	var intersection := get_world_3d().direct_space_state.intersect_ray(query)
 	if !intersection:
 		_level_cursor_projection = null
