@@ -28,7 +28,7 @@ func _ready() -> void:
 	Session.player_connected.connect(_on_player_connected)
 
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		pause.visible = not pause.visible
 

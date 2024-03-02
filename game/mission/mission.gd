@@ -12,6 +12,7 @@ var _players: Dictionary = {}
 @onready var _level: Node3D = $Level
 @onready var _unit_spawner: MultiplayerSpawner = $UnitSpawner
 @onready var _units: Node3D = $Units
+@onready var _ui: MissionUI = $UI
 @onready var _mode_controls: Control = $UI/ModeControls
 @onready var _num_enemies: LineEdit = $UI/ModeControls/HBoxContainer/NumEnemies
 
@@ -39,6 +40,7 @@ func _spawn_player(peer_id: int, _player: Player) -> void:
 	unit.add_controller("player", peer_id)
 	unit.add_to_team(0)
 	_players[peer_id] = unit
+	_select_unit.rpc_id(peer_id, unit.id)
 
 
 func _spawn_enemy() -> void:
@@ -112,3 +114,8 @@ func _on_spawn_enemies_pressed() -> void:
 func _on_clear_enemies_pressed() -> void:
 	for e in get_tree().get_nodes_in_group("enemies"):
 		e.queue_free()
+
+
+@rpc("authority", "call_local", "reliable")
+func _select_unit(id: int) -> void:
+	_ui.select_unit(Unit.get_unit(id))

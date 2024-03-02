@@ -3,7 +3,7 @@ extends Camera3D
 """
 Controlls how camera behavis in the mission.
 
-Active camera instance can be retreived with [method MissionCamera.get_active]. It provides
+Active camera instance can be retreived with [method MissionCamera.get_instance]. It provides
 helper methods to project cursor position onto the level geometry which can be used for
 to target a [Ability], for example.
 """
@@ -12,12 +12,12 @@ const _MOVE_SPEED = 40
 const _TARGET_RAY_LENGTH = 100
 const _LEVEL_COLLISION_LAYER = 0
 
-var _level_cursor_projection: Variant
+var _level_cursor_projection: Variant = null
 
 static var _active: MissionCamera = null
 
 
-static func get_active() -> MissionCamera:
+static func get_instance() -> MissionCamera:
 	return _active
 
 

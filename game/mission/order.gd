@@ -1,17 +1,36 @@
 class_name Order
 extends Node
 """
-Represents intention to use [Ability]. Contains information about what ability to use and on what
-target. It can spawn child nodes to show visuals (e.g. a point where [Unit] will move).
+Order has two purposes (phases):
+	1. Prepare - visually represent aiming of an [Ability] (e.g. change cursor shape to show
+		targeting). In this case [Order.target] is always `null` and Order MUST emit
+		[Order.prepared] signal to submit a target that will be later set in the queue phase.
+	2. Queue - visually represent an intent to use an [Ability] that's already been confirmed. In
+		this case [Order.target] is already set (typically to the value submitted in
+		[Order.prepared]).
 
-[Unit] stores [Order]s in a queue for execution as child nodes.
+Always check [Order.is_preparing] to distinguish between phases and create a corresponding visual
+representation.
+
+[Order.target] may be set without a prepare phase by AI [Controller]s or UI shortcuts.
+
+[Unit] stores [Order]s in a queue for execution as child nodes. But other nodes can also instantiate
+[Order] in the prepareing phase. Never make assumtions about what is the orders parent. Moreover,
+[Order] in the prepare phase is not the same instance as the queue phase.
 """
 
+# Can be emitted to spawn additional nodes to visualise the order. Spanwed nodes are cleaned up
+# automatically.
 signal spawn(node: Node)
+# Must be emitted to finish preparing a target. For example, when user is aiming at something.
+signal prepared(target: Variant)
 
-@export var resource: OrderResource
-@export var ability_slug: String
-
+# True if user is aiming and false if the order is already in the queue.
+var is_preparing: bool
+var ability_slug: String
+var ability: AbilityResource
+# Target that was set for the order (typically by emitting [Order.prepared] in the prepare phase).
+# If [Order.is_preparing] is true, target will always be `null`.
 var target: Variant
 var unit_position: Vector3
 
@@ -32,13 +51,15 @@ func _on_spawn(node: Node) -> void:
 func _ready() -> void:
 	spawn.connect(_on_spawn)
 	set_process(false)
-	set_process_input(false)
-	set_process_shortcut_input(false)
-	set_process_unhandled_input(false)
-	set_process_unhandled_key_input(false)
 	set_physics_process(false)
+	if !is_preparing:
+		set_process_input(false)
+		set_process_shortcut_input(false)
+		set_process_unhandled_input(false)
+		set_process_unhandled_key_input(false)
 
 
+# IMPORTANT: Extending classes should always call `super` in the end.
 func _exit_tree() -> void:
 	for node in _spawned:
 		node.queue_free()

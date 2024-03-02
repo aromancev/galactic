@@ -6,5 +6,7 @@
 
 [resource]
 script = ExtResource("2_njs5h")
+name = "Move"
 ability_script = ExtResource("1_avh81")
 order = ExtResource("2_dathc")
+is_displayed = true

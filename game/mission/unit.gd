@@ -10,13 +10,24 @@ that define how a particular unit should look and behave like [Ability], [Contro
 """
 
 signal spawn(node: Node)
+signal ability_added(res: AbilityResource)
+signal ability_removed(res: AbilityResource)
 
 const _MAX_IMPULSE_HORIZONTAL = 30
 const _MAX_IMPULSE_VERTICAL = 30
 const _HORIZONTAL_DRAG = 10
 const _GRAVITY = 9.8
+# This can never be more than 64 because teams are stored in a bit field.
+# Increasing this number can negatively impact performance when adding/removing teams.
+const _MAX_TEAMS = 16
 
 @export var resource: UnitResource = UnitResource.new()
+
+# Never changes.
+@export var id: int = 0:
+	set(v):
+		if id == 0 and v > 0:
+			id = v
 
 @export var label: String:
 	get:
@@ -27,7 +38,22 @@ const _GRAVITY = 9.8
 			_ui.label = v
 
 # Bit field that stores all teams that the Unit is in.
-@export var _teams: int
+@export var _teams: int = 0:
+	set(v):
+		if _teams == v:
+			return
+		_teams = v
+
+		if is_multiplayer_authority():
+			return
+
+		for team in _MAX_TEAMS:
+			var group: StringName = "team_%s" % team
+			if _teams & 1 << team:
+				add_to_group(group)
+			else:
+				remove_from_group(group)
+
 @export var is_queueing_abilities: bool = false:
 	set(v):
 		is_queueing_abilities = v
@@ -62,6 +88,14 @@ var _attributes: Dictionary = {}
 @onready var _collider: CollisionShape3D = $CollisionShape3D
 @onready var _ui: UnitUI = $UI
 
+static var _id_iterator: int = 0
+# id => Unit.
+static var _units: Dictionary = {}
+
+
+static func get_unit(id_p: int) -> Unit:
+	return _units.get(id_p)
+
 
 func get_radius() -> float:
 	var capsule: CapsuleShape3D = _collider.shape
@@ -72,24 +106,48 @@ func add_to_team(team: int) -> void:
 	if !is_multiplayer_authority():
 		return
 
-	assert(team >= 0 and team < 64, "Exceeded team number range [0, 63].")
+	assert(team >= 0 and team < _MAX_TEAMS, "Exceeded team number range [0, %s)." % _MAX_TEAMS)
 	_teams |= 1 << team
+	add_to_group("team_%s" % team)
 
 
 func remove_from_team(team: int) -> void:
 	if !is_multiplayer_authority():
 		return
 
-	assert(team >= 0 and team < 64, "Exceeded team number range [0, 63].")
+	assert(team >= 0 and team < _MAX_TEAMS, "Exceeded team number range [0, %s)." % _MAX_TEAMS)
 	_teams &= ~(1 << team)
+	remove_from_group("team_%s" % team)
 
 
 func get_teams() -> int:
 	return _teams
 
 
-func is_on_same_team(other: Unit) -> bool:
+func is_ally(other: Unit) -> bool:
 	return bool(other.get_teams() & _teams)
+
+
+func get_enemies() -> Array:
+	var enemies := []
+
+	for team in _MAX_TEAMS:
+		var group: StringName = "team_%s" % team
+		if !_teams & 1 << team:
+			enemies += get_tree().get_nodes_in_group(group)
+
+	return enemies
+
+
+func get_allies() -> Array:
+	var allies := []
+
+	for team in _MAX_TEAMS:
+		var group: StringName = "team_%s" % team
+		if _teams & 1 << team:
+			allies += get_tree().get_nodes_in_group(group)
+
+	return allies
 
 
 func add_impulse(delta: Vector3) -> void:
@@ -124,6 +182,13 @@ func teleport(pos: Vector3) -> void:
 	_position_sync = pos
 
 
+func get_planned_position() -> Vector3:
+	if _orders.get_child_count() == 0:
+		return global_position
+
+	return _get_last_order().get_next_unit_position()
+
+
 # Creates and adds a new [Controller] to the unit. The controller will be replicated to all
 # peers but only the peer with [param authority_id] will be able to use it.
 func add_controller(slug: String, authority_id: int) -> void:
@@ -144,6 +209,24 @@ func remove_controller(slug: String, authority_id: int) -> void:
 		return
 
 	_remove_controller(slug, authority_id)
+
+
+# Returns AbilityResource for the corresponding ability slug.
+func get_ability(slug: String) -> AbilityResource:
+	var ability: Ability = _abilities.get(slug)
+	if !ability:
+		return null
+
+	return ability.resource.duplicate(true)
+
+
+# Returns all unit abilities in the form: slug => [AbilityResource].
+func get_abilities() -> Dictionary:
+	var abils := {}
+	for slug: String in _abilities:
+		var a: Ability = _abilities[slug]
+		abils[slug] = a.resource.duplicate(true)
+	return abils
 
 
 # Creates and adds a [Ability] to the unit. The ability will be replicated to all peers.
@@ -317,7 +400,15 @@ func set_attribute_max_value(slug: String, max_value: float) -> void:
 	_on_attribute_changed(slug)
 
 
+func _exit_tree() -> void:
+	_units.erase(id)
+
+
 func _ready() -> void:
+	_id_iterator += 1
+	id = _id_iterator
+	_units[id] = self
+
 	_ui.label = label
 
 	_controller_spawner.set_spawn_function(_spawn_controller)
@@ -447,6 +538,8 @@ func _spawn_ability(slug_id: int) -> Ability:
 	ability.used.connect(_on_ability_used.bind(slug))
 
 	_abilities[slug] = ability
+
+	ability_added.emit(res.duplicate(true))
 	return ability
 
 
@@ -466,6 +559,7 @@ func _remove_ability(slug: String) -> void:
 	if !ability:
 		return
 
+	ability_removed.emit(ability.resource.duplicate(true))
 	_abilities.erase(slug)
 	ability.queue_free()
 	for order: Order in _orders.get_children():
@@ -551,18 +645,19 @@ func _spawn_order(args: Array) -> Order:
 		push_error("Can't find Ability with slug =  %s" % ability_slug)
 		return
 
+	var last_order := _get_last_order()
 	var order := Order.new()
 	order.set_script(ability.resource.order.order_script)
-	order.spawn.connect(_on_spawn)
-
-	var last_order := _get_last_order()
+	order.is_preparing = false
+	order.ability_slug = ability_slug
+	order.ability = ability.resource.duplicate(true)
+	order.target = target
 	if last_order:
 		order.unit_position = last_order.get_next_unit_position()
 	else:
 		order.unit_position = global_position
-	order.ability_slug = ability_slug
-	order.resource = ability.resource.order
-	order.target = target
+
+	order.spawn.connect(_on_spawn)
 	return order
 
 

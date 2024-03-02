@@ -16,9 +16,14 @@ Components that define a Unit:
 
 ## Teams
 To distinguish enemies from allies a team system is used. Unit can be a part of maximum 64 teams 
-which are stored as a bit field in the Unit and synchronized across all clients. Units that have at least one team in common are allies. Otherwise enemies.
+which are stored as a bit field in the Unit and synchronized across all clients. Units that have at
+least one team in common are allies. Otherwise enemies.
 
-By convention, all players start with group `0`. To make NPCs allies, add them to group `0`. To make them enemies, remove them from group `0`.
+Convention for teams is as follows:
+* `0` - All player units. No other units should ever be added to this group.
+* `1` - Player allies. To make NPCs allies, add them to this group. To make them enemies, remove
+them from the group.
+* `2` - Default team for enemies.
 
 ## Collision
 Convention for collision layers is as follows:
