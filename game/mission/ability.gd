@@ -36,6 +36,7 @@ func terminate() -> void:
 	terminated.emit()
 
 
+# Called inside `_physics_process` so it is safe to use physics inside.
 func get_unit_velocity() -> Vector3:
 	return Vector3.ZERO
 
@@ -45,10 +46,6 @@ func get_unit_velocity() -> Vector3:
 # Useful to override attribute changes, for example to reduce incoming damage.
 func before_attribute_increment(_slug: String, delta: float) -> float:
 	return delta
-
-
-func prepare(seconds: float) -> void:
-	await get_tree().create_timer(seconds).timeout
 
 
 func is_using() -> bool:

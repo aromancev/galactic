@@ -20,6 +20,14 @@ which are stored as a bit field in the Unit and synchronized across all clients.
 
 By convention, all players start with group `0`. To make NPCs allies, add them to group `0`. To make them enemies, remove them from group `0`.
 
+## Collision
+Convention for collision layers is as follows:
+
+* `1` - Static level geometry.
+* `2` - Unit body.
+* `3` - Unit [personal space](./personal_space.gd). 
+* `4` - Projectiles.
+
 ## Modular Design
 The goal of modular design is to allow an easy way to create new content. This allows
  straightforward modding and overall better modularization of components. 

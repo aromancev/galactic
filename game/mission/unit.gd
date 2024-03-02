@@ -11,8 +11,8 @@ that define how a particular unit should look and behave like [Ability], [Contro
 
 signal spawn(node: Node)
 
-const _MAX_IMPULSE_HORIZONTAL = 15
-const _MAX_IMPULSE_VERTICAL = 5
+const _MAX_IMPULSE_HORIZONTAL = 30
+const _MAX_IMPULSE_VERTICAL = 30
 const _HORIZONTAL_DRAG = 10
 const _GRAVITY = 9.8
 
@@ -69,11 +69,17 @@ func get_radius() -> float:
 
 
 func add_to_team(team: int) -> void:
+	if !is_multiplayer_authority():
+		return
+
 	assert(team >= 0 and team < 64, "Exceeded team number range [0, 63].")
 	_teams |= 1 << team
 
 
 func remove_from_team(team: int) -> void:
+	if !is_multiplayer_authority():
+		return
+
 	assert(team >= 0 and team < 64, "Exceeded team number range [0, 63].")
 	_teams &= ~(1 << team)
 
@@ -108,6 +114,14 @@ func add_impulse(delta: Vector3) -> void:
 
 	_position_sync = position
 	_impulse_sync = _impulse
+
+
+func teleport(pos: Vector3) -> void:
+	if !is_multiplayer_authority():
+		return
+
+	global_position = pos
+	_position_sync = pos
 
 
 # Creates and adds a new [Controller] to the unit. The controller will be replicated to all
@@ -340,6 +354,7 @@ func _physics_process(delta: float) -> void:
 	var prevoius_impulse := _impulse
 	velocity = _impulse + _get_ability_velocity()
 	var collided := move_and_slide()
+
 	# Don't fly up if hit a wall or something.
 	if collided and _impulse.y > 0:
 		_impulse.y = 0
