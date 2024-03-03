@@ -1,7 +1,7 @@
-class_name Navigator
+class_name Follower
 extends RefCounted
 """
-Navigator is a more flexible alternative to NavigationAgent3D.
+Follower follows target node while avoiding obstacles.
 
 It does not require node instantiation and uses physics to optimize path.
 """
@@ -10,6 +10,10 @@ const _LEVEL_COLLISION_LAYER = 0
 
 # Distance to a point on a path to cosider it reached.
 var margin: float = 0.2
+# Distance to target to consider it reached.
+var target_margin: float = 1
+# Distance the target can travel before a new path needs to be calculated.
+var target_movement_threshold: float = 1
 # Value that is going to be substracted from all navigation points Y coordinate. Useful because
 # most of the time navigation mesh is floating some distance above the ground.
 var height_offset: float = 0.5
@@ -19,12 +23,15 @@ var radius: float = 0.5:
 	set(v):
 		radius = v
 		PhysicsServer3D.shape_set_data(_shape, v)
+# How often the follow path should be recaltulated.
+var compute_timeout: float = 0.3
 
 var _subject: Node3D
-var _target: Variant
+var _target: Node3D
 var _path_index: int = 0
 var _path: PackedVector3Array
 var _shape := PhysicsServer3D.sphere_shape_create()
+var _since_compute: float
 
 
 func _init(subject: Node3D) -> void:
@@ -32,58 +39,70 @@ func _init(subject: Node3D) -> void:
 	PhysicsServer3D.shape_set_data(_shape, radius)
 
 
-func set_target(target: Vector3) -> void:
-	_reset_navigation()
+func set_target(target: Node3D) -> void:
+	# Can't follow itself.
+	if _subject == target:
+		return
+
 	_target = target
 
 
 func is_navigation_finished() -> bool:
-	return _target == null
+	if _target == null:
+		return true
 
-
-func reset() -> void:
-	_reset_navigation()
+	return _subject.global_position.distance_to(_target.global_position) <= target_margin
 
 
 # Returns direction for the unit to move towards the target avoiding obstacles.
 # WARNING: Uses physics to optimize path. Call only inside `_physics_process`.
-func get_direction(_delta: float) -> Vector3:
+func get_direction(delta: float) -> Vector3:
 	if is_navigation_finished():
 		return Vector3.ZERO
 
-	_compute_path()
+	_compute_path(delta)
+
+	# No navigation path means moving straight towards the target.
+	if _path.is_empty():
+		return _subject.global_position.direction_to(_target.global_position)
 
 	# Iterate over all points that are too close.
-	var from := _subject.global_position
 	var path_point := _path[_path_index]
 	path_point.y -= height_offset
-	while from.distance_to(path_point) <= margin:
+	while _subject.global_position.distance_to(path_point) <= margin:
 		_path_index += 1
 		if _path_index >= _path.size():
-			_reset_navigation()
+			_path = []
+			_path_index = 0
 			return Vector3.ZERO
 
 		path_point = _path[_path_index]
 		path_point.y -= height_offset
 
-	return from.direction_to(path_point)
+	return _subject.global_position.direction_to(path_point)
 
 
-func _compute_path() -> void:
-	if _target == null or !_path.is_empty():
+func _compute_path(delta: float) -> void:
+	if _target == null:
 		return
 
-	var map := _subject.get_world_3d().get_navigation_map()
+	if _since_compute < compute_timeout:
+		_since_compute += delta
+		return
+
+	_since_compute = 0
+
 	# Check if navigation is required.
-	if _no_obstacles_between(_subject.global_position, _target as Vector3):
-		var from := NavigationServer3D.map_get_closest_point(map, _subject.global_position)
-		var to := NavigationServer3D.map_get_closest_point(map, _target as Vector3)
-		_path = [from, to]
-		_path_index = 1
+	if _no_obstacles_between(_subject.global_position, _target.global_position):
+		_path = []
+		_path_index = 0
 		return
 
 	# Build navigation path.
-	_path = NavigationServer3D.map_get_path(map, _subject.global_position, _target as Vector3, true)
+	var map := _subject.get_world_3d().get_navigation_map()
+	_path = NavigationServer3D.map_get_path(
+		map, _subject.global_position, _target.global_position, true
+	)
 	_path_index = 1
 
 
@@ -108,9 +127,3 @@ func _notification(what: int) -> void:
 		return
 
 	PhysicsServer3D.free_rid(_shape)
-
-
-func _reset_navigation() -> void:
-	_path = []
-	_path_index = 0
-	_target = null

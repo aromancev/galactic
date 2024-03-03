@@ -23,7 +23,9 @@ func select_unit(unit: Unit) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("select_alt"):
-		_cancel_prepare()
+		if _preparing_order:
+			_preparing_order.queue_free()
+			_preparing_order = null
 		return
 
 	if event.is_action_pressed("select"):
@@ -40,11 +42,24 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("orders_clear"):
 		Input.parse_input_event(AbilityQueueClearEvent.new(_selected_unit.id))
 
-	elif event is InputEventKey:
-		var e: InputEventKey = event
-		if e.pressed and e.keycode > KEY_0 and e.keycode <= KEY_9:
-			var slug: String = _abilities.get_child(e.keycode - KEY_1).get_meta("slug")
-			_prepare(slug)
+	elif event.is_action_pressed("ability_1"):
+		_prepare_index(0)
+	elif event.is_action_pressed("ability_2"):
+		_prepare_index(1)
+	elif event.is_action_pressed("ability_3"):
+		_prepare_index(2)
+	elif event.is_action_pressed("ability_4"):
+		_prepare_index(3)
+	elif event.is_action_pressed("ability_5"):
+		_prepare_index(4)
+	elif event.is_action_pressed("ability_6"):
+		_prepare_index(5)
+	elif event.is_action_pressed("ability_7"):
+		_prepare_index(6)
+	elif event.is_action_pressed("ability_8"):
+		_prepare_index(7)
+	elif event.is_action_pressed("ability_9"):
+		_prepare_index(8)
 
 
 func _render_abilities() -> void:
@@ -68,7 +83,9 @@ func _prepare(slug: String) -> void:
 	if !_selected_unit:
 		return
 
-	_cancel_prepare()
+	if _preparing_order:
+		_order_container.remove_child(_preparing_order)
+		_preparing_order.queue_free()
 
 	var ability := _selected_unit.get_ability(slug)
 	_preparing_order = Order.new()
@@ -82,6 +99,11 @@ func _prepare(slug: String) -> void:
 	_order_container.add_child(_preparing_order)
 
 
+func _prepare_index(i: int) -> void:
+	var slug: String = _abilities.get_child(i).get_meta("slug")
+	_prepare(slug)
+
+
 func _on_spawn(node: Node) -> void:
 	spawn.emit(node)
 
@@ -89,13 +111,6 @@ func _on_spawn(node: Node) -> void:
 func _on_prepared(target: Variant) -> void:
 	var e := AbilityUsedEvent.new(_selected_unit.id, _preparing_order.ability_slug, target)
 	Input.parse_input_event(e)
-	_cancel_prepare()
-
-
-func _cancel_prepare() -> void:
-	if _preparing_order == null:
-		return
-
 	_preparing_order.queue_free()
 	_preparing_order = null
 

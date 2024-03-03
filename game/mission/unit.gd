@@ -442,7 +442,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var prevoius_impulse := _impulse
-	velocity = _impulse + _get_ability_velocity()
+	velocity = _impulse + _get_ability_velocity(delta)
 	var collided := move_and_slide()
 
 	# Don't fly up if hit a wall or something.
@@ -474,9 +474,9 @@ func _physics_process(delta: float) -> void:
 
 # Only one ability is allowed to move unit at a time. Ability that was added earlier will
 # have priority.
-func _get_ability_velocity() -> Vector3:
+func _get_ability_velocity(delta: float) -> Vector3:
 	for a: Ability in _abilities.values():
-		var v := a.get_unit_velocity()
+		var v := a.get_unit_velocity(delta)
 		if v != Vector3.ZERO:
 			return v
 
@@ -679,7 +679,6 @@ func _spawn_attribute(slug_id: int) -> Attribute:
 
 
 func _despawn_attribute(attribute: Attribute) -> void:
-	print(attribute)
 	for slug: String in _attributes:
 		if _attributes[slug] == attribute:
 			_remove_attribute(slug)

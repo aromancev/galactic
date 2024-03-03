@@ -16,7 +16,7 @@ polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_giuq7"]
 data = PackedVector3Array(1.9999, 0, 1.9999, -2, 0, 1.9999, 1.9999, 0, -2, -2, 0, 1.9999, -2, 0, -2, 1.9999, 0, -2, 1.9999, 2, -2, 1.9999, 0, -2, -2, 2, -2, 1.9999, 0, -2, -2, 0, -2, -2, 2, -2)
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_18y1x"]
+[sub_resource type="NavigationMesh" id="NavigationMesh_b8vpi"]
 vertices = PackedVector3Array(-1.5, 0.5, -1.25, -1.5, 0.5, 1.5, 1.5, 0.5, 1.5, 1.5, 0.5, -1.25)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
@@ -55,7 +55,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_giuq7")
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="Wall"]
-navigation_mesh = SubResource("NavigationMesh_18y1x")
+navigation_mesh = SubResource("NavigationMesh_b8vpi")
 
 [node name="Corridor" parent="." instance=ExtResource("2_jiemx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)

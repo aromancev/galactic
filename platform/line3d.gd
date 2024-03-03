@@ -8,10 +8,12 @@ func _init(points: PackedVector3Array, color: Color, no_depth_test: bool = false
 	material.no_depth_test = no_depth_test
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = color
-	imesh.surface_begin(Mesh.PRIMITIVE_LINES, material)
-	for p in points:
-		imesh.surface_add_vertex(p)
-	imesh.surface_end()
+
+	for i in points.size() - 1:
+		imesh.surface_begin(Mesh.PRIMITIVE_LINES, material)
+		imesh.surface_add_vertex(points[i])
+		imesh.surface_add_vertex(points[i + 1])
+		imesh.surface_end()
 
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh = imesh

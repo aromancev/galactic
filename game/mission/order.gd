@@ -5,6 +5,8 @@ Order has two purposes (phases):
 	1. Prepare - visually represent aiming of an [Ability] (e.g. change cursor shape to show
 		targeting). In this case [Order.target] is always `null` and Order MUST emit
 		[Order.prepared] signal to submit a target that will be later set in the queue phase.
+		IMPORTANT: Targets can only be primitive values as they are passed via network. To pass a
+		[Unit] as a target, for example, emit it's id (int), not the node itself.
 	2. Queue - visually represent an intent to use an [Ability] that's already been confirmed. In
 		this case [Order.target] is already set (typically to the value submitted in
 		[Order.prepared]).
