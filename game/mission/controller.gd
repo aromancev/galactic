@@ -9,6 +9,14 @@ what it CAN do. It MUST NOT define any new behaviour for a [Unit] like an [Abili
 """
 
 
+func get_unit_id() -> int:
+	return _get_unit().id
+
+
+func get_ability(slug: String) -> AbilityResource:
+	return _get_unit().get_ability(slug)
+
+
 func use_ability(ability_slug: String, target: Variant) -> void:
 	var authority := _get_unit().get_multiplayer_authority()
 	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)

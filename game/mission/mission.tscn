@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cpdkh5x4i1vcp"]
+[gd_scene load_steps=4 format=3 uid="uid://cpdkh5x4i1vcp"]
 
 [ext_resource type="Script" path="res://game/mission/mission_camera.gd" id="1_6esjq"]
 [ext_resource type="Script" path="res://game/mission/mission.gd" id="1_j2t8p"]
+[ext_resource type="Script" path="res://game/mission/mission_ui.gd" id="3_u2teq"]
 
 [node name="Mission" type="Node3D"]
 script = ExtResource("1_j2t8p")
@@ -27,6 +28,11 @@ _spawnable_scenes = PackedStringArray("res://game/mission/abilities/shield/power
 spawn_path = NodePath("../Units")
 
 [node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("3_u2teq")
+
+[node name="Abilities" type="VBoxContainer" parent="UI"]
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="ModeControls" type="PanelContainer" parent="UI"]
 anchors_preset = 7
@@ -69,6 +75,8 @@ layout_mode = 2
 focus_mode = 1
 placeholder_text = "nr. enemies"
 expand_to_text_length = true
+
+[node name="PreparingOrder" type="Node" parent="UI"]
 
 [connection signal="pressed" from="UI/ModeControls/HBoxContainer/StartQueue" to="." method="_on_start_queue_pressed"]
 [connection signal="toggled" from="UI/ModeControls/HBoxContainer/QueueSwitch" to="." method="_on_queue_switch_toggled"]

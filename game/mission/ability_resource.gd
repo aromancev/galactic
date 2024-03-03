@@ -4,8 +4,10 @@ extends SluggedResource
 Represents all configuration resources that define a particular [Ability].
 """
 
+@export var name: String
 @export var ability_script: Script
 @export var order: OrderResource
+@export var is_displayed: bool
 
 static var _slugs := Slugs.new("res://game/mission/abilities")
 

@@ -3,18 +3,18 @@ extends Controller
 
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("select_alt"):
-		var target: Variant = MissionCamera.get_active().get_level_cursor_projection()
-		if target == null:
-			return
+	if not event is UnitEvent:
+		return
 
-		use_ability("navigate", target)
+	var unit_event: UnitEvent = event
+	if unit_event.unit_id != get_unit_id():
+		return
 
-	if event.is_action_pressed("select"):
-		var target := MissionCamera.get_active().get_cursor_projection_at(0)
-		use_ability("shoot", target)
+	if event is AbilityUsedEvent:
+		var e: AbilityUsedEvent = event
+		use_ability(e.slug, e.target)
 
-	if event.is_action_pressed("orders_clear"):
+	elif event is AbilityQueueClearEvent:
 		ability_queue_clear()
 
 
