@@ -168,7 +168,7 @@ func remove_ability(slug: String) -> void:
 
 # Uses a [Ability]. Should only be called by the authority as RPC but can be called as a regular
 # function by a [Controller], for example.
-func use_ability(ability_slug: String, _order_slug: String, target: Variant) -> void:
+func use_ability(ability_slug: String, target: Variant) -> void:
 	if !is_multiplayer_authority():
 		return
 
@@ -186,13 +186,12 @@ func terminate_ability(slug: String) -> void:
 	_terminate_ability.rpc(AbilityResource.get_slug_id(slug))
 
 
-func queue_ability(ability_slug: String, order_slug: String, target: Variant) -> void:
+func queue_ability(ability_slug: String, target: Variant) -> void:
 	if !is_multiplayer_authority():
 		return
 
 	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)
-	var order_slug_id := OrderResource.get_slug_id(order_slug)
-	_order_spawner.spawn([ability_slug_id, order_slug_id, target])
+	_order_spawner.spawn([ability_slug_id, target])
 
 
 func ability_queue_start() -> void:
@@ -543,18 +542,17 @@ func _get_last_order() -> Order:
 
 func _spawn_order(args: Array) -> Order:
 	var ability_slug_id: int = args[0]
-	var order_slug_id: int = args[1]
-	var target: Variant = args[2]
+	var target: Variant = args[1]
 
-	var order_slug := OrderResource.get_slug(order_slug_id)
 	var ability_slug := AbilityResource.get_slug(ability_slug_id)
-	var res: OrderResource = load(OrderResource.get_resource_path(order_slug))
-	if !res:
-		push_error("Can't find Order with slug_id =  %s" % order_slug)
+
+	var ability: Ability = _abilities.get(ability_slug)
+	if !ability:
+		push_error("Can't find Ability with slug =  %s" % ability_slug)
 		return
 
 	var order := Order.new()
-	order.set_script(res.order_script)
+	order.set_script(ability.resource.order.order_script)
 	order.spawn.connect(_on_spawn)
 
 	var last_order := _get_last_order()
@@ -563,7 +561,7 @@ func _spawn_order(args: Array) -> Order:
 	else:
 		order.unit_position = global_position
 	order.ability_slug = ability_slug
-	order.resource = res
+	order.resource = ability.resource.order
 	order.target = target
 	return order
 

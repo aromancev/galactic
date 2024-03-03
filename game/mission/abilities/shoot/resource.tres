@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="AbilityResource" load_steps=3 format=3 uid="uid://c2nugelt0bnee"]
+[gd_resource type="Resource" script_class="AbilityResource" load_steps=4 format=3 uid="uid://c2nugelt0bnee"]
 
 [ext_resource type="Script" path="res://game/mission/ability_resource.gd" id="1_fvobw"]
 [ext_resource type="Script" path="res://game/mission/abilities/shoot/ability.gd" id="1_s51kx"]
+[ext_resource type="Resource" uid="uid://msgopic3j24p" path="res://game/mission/orders/shoot/resource.tres" id="2_w6u4u"]
 
 [resource]
 script = ExtResource("1_fvobw")
 ability_script = ExtResource("1_s51kx")
+order = ExtResource("2_w6u4u")

@@ -19,9 +19,9 @@ func _ready() -> void:
 
 func _on_timeout() -> void:
 	if randi_range(0, 1):
-		use_ability("navigate", "move", _get_random_point_on_test_level())
+		use_ability("navigate", _get_random_point_on_test_level())
 	else:
-		use_ability("shoot", "shoot", _get_random_point_on_test_level())
+		use_ability("shoot", _get_random_point_on_test_level())
 
 
 func _get_random_point_on_test_level() -> Vector3:

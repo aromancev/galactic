@@ -5,6 +5,7 @@ Represents all configuration resources that define a particular [Ability].
 """
 
 @export var ability_script: Script
+@export var order: OrderResource
 
 static var _slugs := Slugs.new("res://game/mission/abilities")
 

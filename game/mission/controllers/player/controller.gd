@@ -8,11 +8,11 @@ func _input(event: InputEvent) -> void:
 		if target == null:
 			return
 
-		use_ability("navigate", "move", target)
+		use_ability("navigate", target)
 
 	if event.is_action_pressed("select"):
 		var target := MissionCamera.get_active().get_cursor_projection_at(0)
-		use_ability("shoot", "shoot", target)
+		use_ability("shoot", target)
 
 	if event.is_action_pressed("orders_clear"):
 		ability_queue_clear()
