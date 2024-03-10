@@ -11,8 +11,10 @@ to target a [Ability], for example.
 const _MOVE_SPEED = 40
 const _TARGET_RAY_LENGTH = 100
 const _LEVEL_COLLISION_LAYER = 0
+const _UNIT_COLLISION_LAYER = 1
 
 var _level_cursor_projection: Variant = null
+var _unit_cursor_projection: Unit = null
 
 static var _active: MissionCamera = null
 
@@ -36,6 +38,13 @@ func get_level_cursor_projection() -> Variant:
 	return _level_cursor_projection
 
 
+# Returns a [Unit] that cursor is hovering on by raycasting. If no Unit has collided with the ray,
+# null is returned.
+# Useful for Unit selection.
+func get_unit_cursor_projection() -> Unit:
+	return _unit_cursor_projection
+
+
 func _init() -> void:
 	_active = self
 
@@ -45,7 +54,7 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	_update_level_cursor_projection()
+	_update_cursor_projections()
 
 
 func _move(delta: float) -> void:
@@ -66,15 +75,24 @@ func _move(delta: float) -> void:
 	transform.origin += vector * _MOVE_SPEED * delta
 
 
-func _update_level_cursor_projection() -> void:
+func _update_cursor_projections() -> void:
 	var mouse_pos := get_viewport().get_mouse_position()
 	var origin := project_ray_origin(mouse_pos)
 	var end := origin + project_ray_normal(mouse_pos) * _TARGET_RAY_LENGTH
 	var query := PhysicsRayQueryParameters3D.create(origin, end)
+
+	# Level projection.
 	query.collision_mask = 1 << _LEVEL_COLLISION_LAYER
 	var intersection := get_world_3d().direct_space_state.intersect_ray(query)
-	if !intersection:
+	if intersection:
+		_level_cursor_projection = intersection.position
+	else:
 		_level_cursor_projection = null
-		return
 
-	_level_cursor_projection = intersection.position
+	# Unit projection.
+	query.collision_mask = 1 << _UNIT_COLLISION_LAYER
+	intersection = get_world_3d().direct_space_state.intersect_ray(query)
+	if intersection and intersection.collider is Unit:
+		_unit_cursor_projection = intersection.collider
+	else:
+		_unit_cursor_projection = null

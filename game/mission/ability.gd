@@ -37,7 +37,7 @@ func terminate() -> void:
 
 
 # Called inside `_physics_process` so it is safe to use physics inside.
-func get_unit_velocity() -> Vector3:
+func get_unit_velocity(_delta: float) -> Vector3:
 	return Vector3.ZERO
 
 

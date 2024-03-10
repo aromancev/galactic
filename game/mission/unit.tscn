@@ -6,6 +6,8 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_djwmv"]
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_taipi"]
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_gavu4"]
 radius = 1.0
 
@@ -26,8 +28,6 @@ properties/4/path = NodePath(".:id")
 properties/4/spawn = true
 properties/4/replication_mode = 0
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_taipi"]
-
 [node name="Unit" type="CharacterBody3D" groups=["units"]]
 collision_layer = 2
 script = ExtResource("1_4kj1a")
@@ -36,6 +36,10 @@ script = ExtResource("1_4kj1a")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_djwmv")
 skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_taipi")
 
 [node name="PersonalSpace" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -58,10 +62,6 @@ text = "Label"
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_interval = 3.0
 replication_config = SubResource("SceneReplicationConfig_aqq1m")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_taipi")
 
 [node name="ControllerSpawner" type="MultiplayerSpawner" parent="."]
 spawn_path = NodePath("..")
