@@ -12,10 +12,6 @@ func use(target: Variant) -> void:
 
 
 func get_unit_velocity(delta: float) -> Vector3:
-	if _follower.is_navigation_finished():
-		done()
-		return Vector3.ZERO
-
 	if !is_using() or !get_unit().is_on_floor():
 		return Vector3.ZERO
 
@@ -26,3 +22,4 @@ func _ready() -> void:
 	super()
 
 	_follower = Follower.new(get_unit())
+	_follower.target_reached.connect(done)
