@@ -21,15 +21,8 @@ signal changed
 	set(v):
 		value = clamp(v, min_value, max_value)
 
-@export var min_value: float:
-	set(v):
-		min_value = v
-		value = clamp(v, min_value, max_value)
-
-@export var max_value: float:
-	set(v):
-		max_value = v
-		value = clamp(v, min_value, max_value)
+@export var min_value: float
+@export var max_value: float
 
 
 func get_attribute_name() -> String:

@@ -1,7 +1,9 @@
 class_name Ability
 extends Node
 """
-Represents [Unit] behaviour such as move or attack.
+Represents what [Unit] can do such as move or attack.
+
+Abilities MUST NOT define behaviour (e.g. use other abilities).
 
 WARNING: Extending classes should never free themselves.
 Use [method Ability.remove_self] instead.
@@ -15,6 +17,8 @@ signal terminated
 
 var _is_using: bool
 var _target: Variant
+# CancelableTimer => null
+var _timers: Dictionary
 
 
 # Called to execute the ability.
@@ -31,6 +35,7 @@ func terminate() -> void:
 	if !_is_using:
 		return
 
+	_clear_timers()
 	_is_using = false
 	_target = null
 	terminated.emit()
@@ -71,10 +76,28 @@ func done() -> void:
 	if !_is_using:
 		return
 
+	_clear_timers()
 	_is_using = false
 	var target: Variant = _target
 	_target = null
 	used.emit(target)
+
+
+# Can be used to wait during ability execution.
+# Returns true if timeout was not cancelled (e.g. if ability was finished or terminated).
+# IMPORTANT: Always check the returned result and stop execution of the function.
+func timeout(time: float) -> bool:
+	if time <= 0:
+		return true
+
+	var timer := CancelableTimer.new()
+	timer.autostart = true
+	_timers[timer] = null
+	add_child(timer)
+	await timer.timeout_or_cancel
+	timer.queue_free()
+	_timers.erase(timer)
+	return !timer.is_cancelled()
 
 
 # IMPORTANT: Extending classes should always call `super` in the beginning.
@@ -84,6 +107,14 @@ func _ready() -> void:
 	set_process_shortcut_input(false)
 	set_process_unhandled_input(false)
 	set_process_unhandled_key_input(false)
+
+
+func _clear_timers() -> void:
+	for t: CancelableTimer in _timers:
+		t.cancel()
+		t.queue_free()
+
+	_timers.clear()
 
 
 # Just in case an ability frees itself this will make sure authority removes it from the

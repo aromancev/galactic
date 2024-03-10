@@ -1,6 +1,5 @@
 extends Ability
 
-const _SPEED = 5
 const _DAMAGE = 25
 
 var _follower: Follower
@@ -16,18 +15,18 @@ func get_unit_velocity(delta: float) -> Vector3:
 	if !is_using() or !get_unit().is_on_floor():
 		return Vector3.ZERO
 
-	return _follower.get_direction(delta) * _SPEED
+	return _follower.get_direction(delta) * get_unit().get_attribute_value("speed")
 
 
 func _hit() -> void:
-	await get_tree().create_timer(0.3).timeout
+	if !await timeout(1):
+		done()
+		return
 
 	var unit := Unit.get_unit(get_target() as int)
 	unit.increment_attribute_value("health", -_DAMAGE)
 	if unit.get_attribute_value("health") == 0:
 		unit.set_attribute_value("health", unit.get_attribute_max_value("health"))
-
-	await get_tree().create_timer(0.3).timeout
 
 	done()
 

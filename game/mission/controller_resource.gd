@@ -5,6 +5,7 @@ Represents all configuration resources that define a particular [Controller].
 """
 
 @export var controller_script: Script
+@export var controller_scene: PackedScene
 
 static var _slugs := Slugs.new("res://game/mission/controllers")
 

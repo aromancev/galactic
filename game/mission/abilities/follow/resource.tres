@@ -10,3 +10,4 @@ name = "Follow"
 ability_script = ExtResource("1_2hxfe")
 order = ExtResource("2_ep1qt")
 is_displayed = true
+is_focus_required = true

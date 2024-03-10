@@ -1,0 +1,48 @@
+[gd_scene load_steps=9 format=3 uid="uid://baflpm33joe2t"]
+
+[ext_resource type="Script" path="res://game/mission/controller_ai.gd" id="1_5q848"]
+[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="2_ogoyn"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="3_vuaot"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/decorators/cooldown.gd" id="4_ucx6s"]
+[ext_resource type="Script" path="res://game/mission/behaviour/find_closest_enemy.gd" id="6_6l8t6"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="7_mu6nr"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/leaves/blackboard_has.gd" id="8_1h6jh"]
+[ext_resource type="Script" path="res://game/mission/behaviour/use_ability.gd" id="9_10rt6"]
+
+[node name="Controller" type="Node" node_paths=PackedStringArray("blackboard")]
+script = ExtResource("1_5q848")
+blackboard = NodePath("Blackboard")
+
+[node name="Blackboard" type="Node" parent="."]
+script = ExtResource("2_ogoyn")
+
+[node name="RefreshTarget" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
+script = ExtResource("3_vuaot")
+blackboard = NodePath("../Blackboard")
+actor = NodePath("..")
+
+[node name="CooldownDecorator" type="Node" parent="RefreshTarget"]
+script = ExtResource("4_ucx6s")
+wait_time = 1.0
+
+[node name="FindClosestEnemyAction" type="Node" parent="RefreshTarget/CooldownDecorator"]
+script = ExtResource("6_6l8t6")
+to_unit = "get_value(\"unit\")"
+set_key = "\"target_unit\""
+
+[node name="Attack" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
+script = ExtResource("3_vuaot")
+blackboard = NodePath("../Blackboard")
+actor = NodePath("..")
+
+[node name="SequenceComposite" type="Node" parent="Attack"]
+script = ExtResource("7_mu6nr")
+
+[node name="TargetSet" type="Node" parent="Attack/SequenceComposite"]
+script = ExtResource("8_1h6jh")
+key = "\"target_unit\""
+
+[node name="MeleeTarget" type="Node" parent="Attack/SequenceComposite"]
+script = ExtResource("9_10rt6")
+ability_slug = "\"melee\""
+ability_target = "get_value(\"target_unit\").id"

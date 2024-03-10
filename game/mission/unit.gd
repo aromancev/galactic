@@ -72,6 +72,8 @@ const _MAX_TEAMS = 16
 			_impulse = v
 
 var _impulse: Vector3
+# Ability slug that the Unit is fopcusing on. Unit can only focus on one ability at a time.
+var _focusing_on: String = ""
 
 # Array[slug, authority_id] => [Controller].
 var _controllers: Dictionary = {}
@@ -255,6 +257,9 @@ func use_ability(ability_slug: String, target: Variant) -> void:
 	if !is_multiplayer_authority():
 		return
 
+	if is_queueing_abilities:
+		return
+
 	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)
 	_position_sync = position
 	_use_ability.rpc(ability_slug_id, target)
@@ -266,6 +271,9 @@ func terminate_ability(slug: String) -> void:
 	if !is_multiplayer_authority():
 		return
 
+	if is_queueing_abilities:
+		return
+
 	_terminate_ability.rpc(AbilityResource.get_slug_id(slug))
 
 
@@ -275,6 +283,13 @@ func queue_ability(ability_slug: String, target: Variant) -> void:
 
 	var ability_slug_id := AbilityResource.get_slug_id(ability_slug)
 	_order_spawner.spawn([ability_slug_id, target])
+
+
+func is_using_ability(slug: String) -> bool:
+	var ability: Ability = _abilities.get(slug)
+	if !ability:
+		return false
+	return ability.is_using()
 
 
 func ability_queue_start() -> void:
@@ -493,8 +508,13 @@ func _spawn_controller(key: PackedInt32Array) -> Controller:
 		push_error("Can't find Controller with slug_id = %s" % slug_id)
 		return
 
-	var controller := Controller.new()
-	controller.set_script(res.controller_script)
+	var controller: Controller
+	if res.controller_scene != null:
+		controller = res.controller_scene.instantiate()
+	else:
+		controller = Controller.new()
+	if res.controller_script != null:
+		controller.set_script(res.controller_script)
 	controller.set_multiplayer_authority(authority_id)
 	_controllers[[slug, authority_id]] = controller
 	return controller
@@ -574,7 +594,14 @@ func _use_ability(ability_slug_id: int, target: Variant) -> void:
 	if !ability:
 		return
 
-	ability.call_deferred("use", target)
+	if ability.resource.is_focus_required:
+		var focused_on: Ability = _abilities.get(_focusing_on)
+		if focused_on:
+			focused_on.terminate()
+
+		_focusing_on = slug
+
+	ability.use(target)
 
 
 @rpc("authority", "call_local", "reliable")
@@ -585,6 +612,8 @@ func _terminate_ability(slug_id: int) -> void:
 		return
 
 	ability.terminate()
+	if _focusing_on == slug:
+		_focusing_on = ""
 
 
 func _on_spawn(node: Node) -> void:
@@ -596,6 +625,8 @@ func _on_ability_used(_target: Variant, slug: String) -> void:
 		return
 
 	_position_sync = position
+	if _focusing_on == slug:
+		_focusing_on = ""
 
 	var oldest: Order = _get_order(0)
 	var next: Order = _get_order(1)

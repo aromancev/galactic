@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: Scony/godot-gdscript-toolkit@4.2.2
-    - run: python lint.py
+    - run: gdlint .
 
   format:
     name: 'Format'

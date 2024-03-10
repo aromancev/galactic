@@ -4,7 +4,9 @@ extends Ability
 func use(target: Variant) -> void:
 	super(target)
 
-	await get_tree().create_timer(0.2).timeout
+	if !await timeout(1):
+		terminate()
+		return
 
 	var ProjectileScene: PackedScene = preload("res://game/mission/abilities/shoot/projectile.tscn")
 	var projectile: Node3D = ProjectileScene.instantiate()
