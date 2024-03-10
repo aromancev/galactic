@@ -6,14 +6,14 @@ Follower follows target node while avoiding obstacles.
 It does not require node instantiation and uses physics to optimize path.
 """
 
+signal target_reached
+
 const _LEVEL_COLLISION_LAYER = 0
 
 # Distance to a point on a path to cosider it reached.
 var margin: float = 0.2
 # Distance to target to consider it reached.
 var target_margin: float = 1
-# Distance the target can travel before a new path needs to be calculated.
-var target_movement_threshold: float = 1
 # Value that is going to be substracted from all navigation points Y coordinate. Useful because
 # most of the time navigation mesh is floating some distance above the ground.
 var height_offset: float = 0.5
@@ -44,7 +44,14 @@ func set_target(target: Node3D) -> void:
 	if _subject == target:
 		return
 
+	reset()
 	_target = target
+
+
+func reset() -> void:
+	_target = null
+	_path = []
+	_path_index = 0
 
 
 func is_navigation_finished() -> bool:
@@ -57,7 +64,12 @@ func is_navigation_finished() -> bool:
 # Returns direction for the unit to move towards the target avoiding obstacles.
 # WARNING: Uses physics to optimize path. Call only inside `_physics_process`.
 func get_direction(delta: float) -> Vector3:
-	if is_navigation_finished():
+	if _target == null:
+		return Vector3.ZERO
+
+	if _subject.global_position.distance_to(_target.global_position) <= target_margin:
+		reset()
+		target_reached.emit()
 		return Vector3.ZERO
 
 	_compute_path(delta)

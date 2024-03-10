@@ -6,6 +6,8 @@ Navigator is a more flexible alternative to NavigationAgent3D.
 It does not require node instantiation and uses physics to optimize path.
 """
 
+signal target_reached
+
 const _LEVEL_COLLISION_LAYER = 0
 
 # Distance to a point on a path to cosider it reached.
@@ -33,7 +35,7 @@ func _init(subject: Node3D) -> void:
 
 
 func set_target(target: Vector3) -> void:
-	_reset_navigation()
+	reset()
 	_target = target
 
 
@@ -42,7 +44,9 @@ func is_navigation_finished() -> bool:
 
 
 func reset() -> void:
-	_reset_navigation()
+	_path = []
+	_path_index = 0
+	_target = null
 
 
 # Returns direction for the unit to move towards the target avoiding obstacles.
@@ -60,7 +64,8 @@ func get_direction(_delta: float) -> Vector3:
 	while from.distance_to(path_point) <= margin:
 		_path_index += 1
 		if _path_index >= _path.size():
-			_reset_navigation()
+			reset()
+			target_reached.emit()
 			return Vector3.ZERO
 
 		path_point = _path[_path_index]
@@ -108,9 +113,3 @@ func _notification(what: int) -> void:
 		return
 
 	PhysicsServer3D.free_rid(_shape)
-
-
-func _reset_navigation() -> void:
-	_path = []
-	_path_index = 0
-	_target = null

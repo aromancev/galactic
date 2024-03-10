@@ -11,10 +11,6 @@ func use(target: Variant) -> void:
 
 
 func get_unit_velocity(delta: float) -> Vector3:
-	if _navigator.is_navigation_finished():
-		done()
-		return Vector3.ZERO
-
 	if !is_using() or !get_unit().is_on_floor():
 		return Vector3.ZERO
 
@@ -25,3 +21,4 @@ func _ready() -> void:
 	super()
 
 	_navigator = Navigator.new(get_unit())
+	_navigator.target_reached.connect(done)
