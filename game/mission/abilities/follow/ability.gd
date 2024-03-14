@@ -1,6 +1,6 @@
 extends Ability
 
-const _FOLLOWSPEEDMULT = 0.3
+const _FOLLOWSPEEDMULT = 0.6
 
 var _follower: Follower
 

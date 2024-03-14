@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://game/mission/abilities/run/ability.gd" id="1_nagka"]
 [ext_resource type="Script" path="res://game/mission/ability_resource.gd" id="1_uq0mr"]
-[ext_resource type="Resource" uid="uid://b4jdaemcplfas" path="res://game/mission/orders/immediate/resource.tres" id="2_x2gpk"]
+[ext_resource type="Resource" uid="uid://co22vnyhs7ubo" path="res://game/mission/orders/run/resource.tres" id="2_i51yx"]
 
 [resource]
 script = ExtResource("1_uq0mr")
 name = "Run"
 ability_script = ExtResource("1_nagka")
-order = ExtResource("2_x2gpk")
-is_displayed = false
+order = ExtResource("2_i51yx")
+is_displayed = true

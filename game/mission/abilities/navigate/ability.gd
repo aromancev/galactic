@@ -1,7 +1,5 @@
 extends Ability
 
-const _SPEED = 5
-
 var _navigator: Navigator
 
 
