@@ -20,3 +20,5 @@
 
 # Exported files
 .export
+.vscode/settings.json
+.vscode/settings.json

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AttributeResource" load_steps=2 format=3 uid="uid://cft7fsv7x1gv5"]
+
+[ext_resource type="Script" path="res://game/mission/attribute_resource.gd" id="1_66scy"]
+
+[resource]
+script = ExtResource("1_66scy")
+name = "speed"
+color = Color(1, 0.521569, 0, 1)
+value = 5.0
+min_value = 1.0
+max_value = 50.0
+display_bar = false
