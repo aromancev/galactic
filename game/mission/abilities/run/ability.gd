@@ -1,5 +1,7 @@
 extends Ability
 
+const _RUNSPEEDMULT = 1.4
+
 var _navigator: Navigator
 
 
@@ -13,7 +15,7 @@ func get_unit_velocity(delta: float) -> Vector3:
 		return Vector3.ZERO
 
 	var unit: Unit = get_unit()
-	return _navigator.get_direction(delta) * unit.get_attribute_value("speed")
+	return _navigator.get_direction(delta) * unit.get_attribute_value("speed") * _RUNSPEEDMULT
 
 
 func _ready() -> void:
