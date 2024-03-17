@@ -136,10 +136,6 @@ ability_9={
 ]
 }
 
-[navigation]
-
-3d/default_edge_connection_margin=1.1
-
 [physics]
 
 3d/run_on_separate_thread=true
