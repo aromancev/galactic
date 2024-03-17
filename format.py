@@ -3,6 +3,7 @@ import subprocess
 
 IGNORE = (
     "addons",
+    "script_templates",
 )
 
 for file in os.listdir(os.getcwd()):

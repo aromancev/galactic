@@ -1,0 +1,72 @@
+[gd_scene load_steps=11 format=3 uid="uid://bvmkv5dqlxp4a"]
+
+[ext_resource type="Script" path="res://game/mission/controller_ai.gd" id="1_dj3y6"]
+[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="2_ggjge"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="4_ae4yr"]
+[ext_resource type="Script" path="res://game/mission/behaviour/find_closest_enemy.gd" id="5_4tdrp"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/decorators/cooldown.gd" id="5_wqoeq"]
+[ext_resource type="Script" path="res://game/mission/behaviour/use_ability.gd" id="6_g3r4i"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="6_ol7hs"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector.gd" id="7_jnc2h"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/leaves/blackboard_has.gd" id="8_h04hj"]
+[ext_resource type="Script" path="res://game/mission/behaviour/no_obstacles.gd" id="9_gijte"]
+
+[node name="Controller" type="Node" node_paths=PackedStringArray("blackboard")]
+script = ExtResource("1_dj3y6")
+blackboard = NodePath("Blackboard")
+
+[node name="Blackboard" type="Node" parent="."]
+script = ExtResource("2_ggjge")
+
+[node name="RefreshTarget" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
+script = ExtResource("4_ae4yr")
+blackboard = NodePath("../Blackboard")
+actor = NodePath("..")
+
+[node name="CooldownDecorator" type="Node" parent="RefreshTarget"]
+script = ExtResource("5_wqoeq")
+wait_time = 1.0
+
+[node name="FindClosestEnemyAction" type="Node" parent="RefreshTarget/CooldownDecorator"]
+script = ExtResource("5_4tdrp")
+to_unit = "get_value(\"unit\")"
+set_key = "\"target_unit\""
+
+[node name="Attack" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
+script = ExtResource("4_ae4yr")
+blackboard = NodePath("../Blackboard")
+actor = NodePath("..")
+
+[node name="SequenceComposite" type="Node" parent="Attack"]
+script = ExtResource("6_ol7hs")
+
+[node name="TargetSet" type="Node" parent="Attack/SequenceComposite"]
+script = ExtResource("8_h04hj")
+key = "\"target_unit\""
+
+[node name="SelectorComposite" type="Node" parent="Attack/SequenceComposite"]
+script = ExtResource("7_jnc2h")
+
+[node name="SequenceComposite" type="Node" parent="Attack/SequenceComposite/SelectorComposite"]
+script = ExtResource("6_ol7hs")
+
+[node name="TargetInSight" type="Node" parent="Attack/SequenceComposite/SelectorComposite/SequenceComposite"]
+script = ExtResource("9_gijte")
+cast_from = "get_value(\"unit\").global_position"
+cast_to = "get_value(\"target_unit\").global_position"
+max_distance = 20.0
+
+[node name="ShootTarget" type="Node" parent="Attack/SequenceComposite/SelectorComposite/SequenceComposite"]
+script = ExtResource("6_g3r4i")
+ability_slug = "\"shoot\""
+ability_target = "get_value(\"target_unit\").global_position"
+
+[node name="CooldownDecorator" type="Node" parent="Attack/SequenceComposite/SelectorComposite"]
+script = ExtResource("5_wqoeq")
+wait_time = 1.0
+
+[node name="FollowTarget" type="Node" parent="Attack/SequenceComposite/SelectorComposite/CooldownDecorator"]
+script = ExtResource("6_g3r4i")
+ability_slug = "\"follow\""
+ability_target = "get_value(\"target_unit\").id"
+is_deferred = true

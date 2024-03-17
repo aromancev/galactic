@@ -19,6 +19,8 @@ config/icon="res://icon.svg"
 
 Saver="*res://game/saver/saver.gd"
 Session="*res://game/session/session.gd"
+BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
+BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
 
 [debug]
 
@@ -37,7 +39,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/format_on_save/plugin.cfg", "res://addons/gdLinter/plugin.cfg")
+enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/format_on_save/plugin.cfg", "res://addons/gdLinter/plugin.cfg")
 
 [input]
 

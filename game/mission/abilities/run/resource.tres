@@ -10,3 +10,4 @@ name = "Run"
 ability_script = ExtResource("1_nagka")
 order = ExtResource("2_i51yx")
 is_displayed = true
+is_focus_required = true

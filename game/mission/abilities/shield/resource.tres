@@ -6,5 +6,8 @@
 
 [resource]
 script = ExtResource("1_ywkbp")
+name = "Ability"
 ability_script = ExtResource("1_62ngd")
 order = ExtResource("2_3ompk")
+is_displayed = false
+is_focus_required = false

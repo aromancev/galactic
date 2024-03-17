@@ -15,23 +15,15 @@ var margin: float = 0.2
 # Value that is going to be substracted from all navigation points Y coordinate. Useful because
 # most of the time navigation mesh is floating some distance above the ground.
 var height_offset: float = 0.5
-# Physical radius of the subject. Will be used to check if the subject can pass directly without
-# hitting anything.
-var radius: float = 0.5:
-	set(v):
-		radius = v
-		PhysicsServer3D.shape_set_data(_shape, v)
 
 var _subject: Node3D
 var _target: Variant
 var _path_index: int = 0
 var _path: PackedVector3Array
-var _shape := PhysicsServer3D.sphere_shape_create()
 
 
 func _init(subject: Node3D) -> void:
 	_subject = subject
-	PhysicsServer3D.shape_set_data(_shape, radius)
 
 
 func set_target(target: Vector3) -> void:
@@ -80,9 +72,10 @@ func _compute_path() -> void:
 
 	var map := _subject.get_world_3d().get_navigation_map()
 	# Check if navigation is required.
-	if _no_obstacles_between(_subject.global_position, _target as Vector3):
-		var from := NavigationServer3D.map_get_closest_point(map, _subject.global_position)
-		var to := NavigationServer3D.map_get_closest_point(map, _target as Vector3)
+	var space := _subject.get_world_3d().direct_space_state
+	var from := NavigationServer3D.map_get_closest_point(map, _subject.global_position)
+	var to := NavigationServer3D.map_get_closest_point(map, _target as Vector3)
+	if LineOfSight.get_default().no_obstacles_between(space, from, to):
 		_path = [from, to]
 		_path_index = 1
 		return
@@ -90,26 +83,3 @@ func _compute_path() -> void:
 	# Build navigation path.
 	_path = NavigationServer3D.map_get_path(map, _subject.global_position, _target as Vector3, true)
 	_path_index = 1
-
-
-func _no_obstacles_between(from: Vector3, to: Vector3) -> bool:
-	from.y += radius + 0.1
-	to.y += radius + 0.1
-
-	var query := PhysicsShapeQueryParameters3D.new()
-	query.shape_rid = _shape
-	query.collision_mask = 1 << _LEVEL_COLLISION_LAYER
-	query.transform.origin = from
-	query.motion = to - from
-
-	var travel := _subject.get_world_3d().direct_space_state.cast_motion(query)
-	# Can travel at least 90% of the path without hitting anything.
-	# Not 100% because the path may end very close to a wall.
-	return travel[0] >= 0.9
-
-
-func _notification(what: int) -> void:
-	if what != NOTIFICATION_PREDELETE:
-		return
-
-	PhysicsServer3D.free_rid(_shape)

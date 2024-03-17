@@ -45,7 +45,10 @@ func _spawn_player(peer_id: int, _player: Player) -> void:
 
 func _spawn_enemy() -> void:
 	var unit: Unit = _unit_spawner.spawn(UnitResource.get_slug_id("test"))
-	unit.add_controller("test", get_multiplayer_authority())
+	if randi_range(0, 1):
+		unit.add_controller("range", get_multiplayer_authority())
+	else:
+		unit.add_controller("melee", get_multiplayer_authority())
 	unit.add_to_team(1)
 	unit.add_to_group("enemies")
 

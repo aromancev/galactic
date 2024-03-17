@@ -1,7 +1,5 @@
 extends Ability
 
-const _FOLLOWSPEEDMULT = 0.6
-
 var _follower: Follower
 
 
@@ -15,8 +13,7 @@ func get_unit_velocity(delta: float) -> Vector3:
 	if !is_using() or !get_unit().is_on_floor():
 		return Vector3.ZERO
 
-	var unit: Unit = get_unit()
-	return _follower.get_direction(delta) * unit.get_attribute_value("speed") * _FOLLOWSPEEDMULT
+	return _follower.get_direction(delta) * get_unit().get_attribute_value("speed")
 
 
 func _ready() -> void:

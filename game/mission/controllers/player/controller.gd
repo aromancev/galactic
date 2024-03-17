@@ -7,7 +7,7 @@ func _input(event: InputEvent) -> void:
 		return
 
 	var unit_event: UnitEvent = event
-	if unit_event.unit_id != get_unit_id():
+	if unit_event.unit_id != get_unit().id:
 		return
 
 	if event is AbilityUsedEvent:

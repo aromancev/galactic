@@ -6,7 +6,7 @@
 [ext_resource type="Resource" uid="uid://bwp1appmbhxb2" path="res://game/mission/attributes/health/resource.tres" id="2_lxnkm"]
 [ext_resource type="Resource" uid="uid://bul437fgf1b2m" path="res://game/mission/abilities/follow/resource.tres" id="3_lfvm5"]
 [ext_resource type="Resource" uid="uid://c3qdfg5dpb4ix" path="res://game/mission/abilities/melee/resource.tres" id="4_vmjf3"]
-[ext_resource type="Resource" path="res://game/mission/abilities/run/resource.tres" id="5_cfrdv"]
+[ext_resource type="Resource" uid="uid://b1xteu50xwvtg" path="res://game/mission/abilities/run/resource.tres" id="5_cfrdv"]
 [ext_resource type="Resource" uid="uid://cft7fsv7x1gv5" path="res://game/mission/attributes/speed/resource.tres" id="7_mmyxm"]
 
 [resource]

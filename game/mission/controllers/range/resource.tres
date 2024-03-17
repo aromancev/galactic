@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ControllerResource" load_steps=3 format=3 uid="uid://c0pj2ldlp3xcg"]
+
+[ext_resource type="Script" path="res://game/mission/controller_resource.gd" id="1_axv5r"]
+[ext_resource type="PackedScene" uid="uid://bvmkv5dqlxp4a" path="res://game/mission/controllers/range/controller.tscn" id="1_kohq8"]
+
+[resource]
+script = ExtResource("1_axv5r")
+controller_scene = ExtResource("1_kohq8")

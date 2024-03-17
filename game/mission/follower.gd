@@ -17,12 +17,6 @@ var target_margin: float = 1
 # Value that is going to be substracted from all navigation points Y coordinate. Useful because
 # most of the time navigation mesh is floating some distance above the ground.
 var height_offset: float = 0.5
-# Physical radius of the subject. Will be used to check if the subject can pass directly without
-# hitting anything.
-var radius: float = 0.5:
-	set(v):
-		radius = v
-		PhysicsServer3D.shape_set_data(_shape, v)
 # How often the follow path should be recaltulated.
 var compute_timeout: float = 0.3
 
@@ -30,13 +24,12 @@ var _subject: Node3D
 var _target: Node3D
 var _path_index: int = 0
 var _path: PackedVector3Array
-var _shape := PhysicsServer3D.sphere_shape_create()
-var _since_compute: float
+# Time since last path computation. If negative, will calculate path immediately.
+var _since_compute: float = -1
 
 
 func _init(subject: Node3D) -> void:
 	_subject = subject
-	PhysicsServer3D.shape_set_data(_shape, radius)
 
 
 func set_target(target: Node3D) -> void:
@@ -46,6 +39,7 @@ func set_target(target: Node3D) -> void:
 
 	reset()
 	_target = target
+	_since_compute = -1
 
 
 func reset() -> void:
@@ -98,14 +92,17 @@ func _compute_path(delta: float) -> void:
 	if _target == null:
 		return
 
-	if _since_compute < compute_timeout:
+	if _since_compute >= 0 and _since_compute < compute_timeout:
 		_since_compute += delta
 		return
 
 	_since_compute = 0
 
 	# Check if navigation is required.
-	if _no_obstacles_between(_subject.global_position, _target.global_position):
+	var space := _subject.get_world_3d().direct_space_state
+	var from := _subject.global_position
+	var to := _target.global_position
+	if LineOfSight.get_default().no_obstacles_between(space, from, to):
 		_path = []
 		_path_index = 0
 		return
@@ -116,26 +113,3 @@ func _compute_path(delta: float) -> void:
 		map, _subject.global_position, _target.global_position, true
 	)
 	_path_index = 1
-
-
-func _no_obstacles_between(from: Vector3, to: Vector3) -> bool:
-	from.y += radius + 0.1
-	to.y += radius + 0.1
-
-	var query := PhysicsShapeQueryParameters3D.new()
-	query.shape_rid = _shape
-	query.collision_mask = 1 << _LEVEL_COLLISION_LAYER
-	query.transform.origin = from
-	query.motion = to - from
-
-	var travel := _subject.get_world_3d().direct_space_state.cast_motion(query)
-	# Can travel at least 90% of the path without hitting anything.
-	# Not 100% because the path may end very close to a wall.
-	return travel[0] >= 0.9
-
-
-func _notification(what: int) -> void:
-	if what != NOTIFICATION_PREDELETE:
-		return
-
-	PhysicsServer3D.free_rid(_shape)

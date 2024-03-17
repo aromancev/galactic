@@ -10,3 +10,4 @@ name = "Shoot"
 ability_script = ExtResource("1_s51kx")
 order = ExtResource("2_w6u4u")
 is_displayed = true
+is_focus_required = true
