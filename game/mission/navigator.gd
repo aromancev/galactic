@@ -2,8 +2,6 @@ class_name Navigator
 extends RefCounted
 """
 Navigator is a more flexible alternative to NavigationAgent3D.
-
-It does not require node instantiation and uses physics to optimize path.
 """
 
 signal target_reached
@@ -42,7 +40,6 @@ func reset() -> void:
 
 
 # Returns direction for the unit to move towards the target avoiding obstacles.
-# WARNING: Uses physics to optimize path. Call only inside `_physics_process`.
 func get_direction(_delta: float) -> Vector3:
 	if is_navigation_finished():
 		return Vector3.ZERO
@@ -71,15 +68,5 @@ func _compute_path() -> void:
 		return
 
 	var map := _subject.get_world_3d().get_navigation_map()
-	# Check if navigation is required.
-	var space := _subject.get_world_3d().direct_space_state
-	var from := NavigationServer3D.map_get_closest_point(map, _subject.global_position)
-	var to := NavigationServer3D.map_get_closest_point(map, _target as Vector3)
-	if LineOfSight.get_default().no_obstacles_between(space, from, to):
-		_path = [from, to]
-		_path_index = 1
-		return
-
-	# Build navigation path.
 	_path = NavigationServer3D.map_get_path(map, _subject.global_position, _target as Vector3, true)
 	_path_index = 1

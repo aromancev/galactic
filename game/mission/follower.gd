@@ -2,8 +2,6 @@ class_name Follower
 extends RefCounted
 """
 Follower follows target node while avoiding obstacles.
-
-It does not require node instantiation and uses physics to optimize path.
 """
 
 signal target_reached
@@ -56,7 +54,6 @@ func is_navigation_finished() -> bool:
 
 
 # Returns direction for the unit to move towards the target avoiding obstacles.
-# WARNING: Uses physics to optimize path. Call only inside `_physics_process`.
 func get_direction(delta: float) -> Vector3:
 	if _target == null:
 		return Vector3.ZERO
@@ -97,15 +94,6 @@ func _compute_path(delta: float) -> void:
 		return
 
 	_since_compute = 0
-
-	# Check if navigation is required.
-	var space := _subject.get_world_3d().direct_space_state
-	var from := _subject.global_position
-	var to := _target.global_position
-	if LineOfSight.get_default().no_obstacles_between(space, from, to):
-		_path = []
-		_path_index = 0
-		return
 
 	# Build navigation path.
 	var map := _subject.get_world_3d().get_navigation_map()
