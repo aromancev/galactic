@@ -15,6 +15,9 @@ var _preparing_order: Order = null
 
 
 func select_unit(unit: Unit) -> void:
+	if !unit:
+		return
+
 	_selected_unit = unit
 	_render_abilities()
 	unit.ability_added.connect(_on_unit_ability_changed)

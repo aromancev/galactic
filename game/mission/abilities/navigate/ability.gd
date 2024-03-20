@@ -15,6 +15,11 @@ func get_unit_velocity(delta: float) -> Vector3:
 	return _navigator.get_direction(delta) * get_unit().get_attribute_value("speed")
 
 
+func terminate() -> void:
+	_navigator.reset()
+	super()
+
+
 func _ready() -> void:
 	super()
 

@@ -18,6 +18,7 @@ script = ExtResource("2_ogoyn")
 
 [node name="RefreshTarget" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("3_vuaot")
+tick_rate = 60
 blackboard = NodePath("../Blackboard")
 actor = NodePath("..")
 
@@ -32,6 +33,7 @@ set_key = "\"target_unit\""
 
 [node name="Attack" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("3_vuaot")
+tick_rate = 20
 blackboard = NodePath("../Blackboard")
 actor = NodePath("..")
 

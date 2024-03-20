@@ -33,6 +33,7 @@ func get_id(slug: String) -> int:
 func load_all() -> void:
 	if _slugs:
 		return
+
 	var slugs := DirAccess.get_directories_at(_dir)
 	for i in slugs.size():
 		_slugs[slugs[i]] = i
