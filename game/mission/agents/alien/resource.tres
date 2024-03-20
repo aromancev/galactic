@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="AgentResource" load_steps=3 format=3 uid="uid://dkovrna8wiuif"]
+
+[ext_resource type="PackedScene" uid="uid://bd6n2i8o80sb1" path="res://game/mission/agents/alien/alien.tscn" id="1_1i8f1"]
+[ext_resource type="Script" path="res://game/mission/agent_resource.gd" id="1_l535c"]
+
+[resource]
+script = ExtResource("1_l535c")
+agent_scene = ExtResource("1_1i8f1")

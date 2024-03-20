@@ -1,10 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://7m4cyt8f5cq2"]
+[gd_scene load_steps=7 format=3 uid="uid://7m4cyt8f5cq2"]
 
 [ext_resource type="Script" path="res://game/mission/unit.gd" id="1_4kj1a"]
 [ext_resource type="Script" path="res://game/mission/unit_ui.gd" id="2_624u0"]
 [ext_resource type="Script" path="res://game/mission/personal_space.gd" id="2_gxjun"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_djwmv"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_taipi"]
 
@@ -31,11 +29,6 @@ properties/4/replication_mode = 0
 [node name="Unit" type="CharacterBody3D" groups=["units"]]
 collision_layer = 2
 script = ExtResource("1_4kj1a")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CapsuleMesh_djwmv")
-skeleton = NodePath("")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

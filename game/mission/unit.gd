@@ -75,6 +75,7 @@ var _impulse: Vector3
 # Ability slug that the Unit is fopcusing on. Unit can only focus on one ability at a time.
 var _focusing_on: String = ""
 
+var _agent: Agent
 # Array[slug, authority_id] => [Controller].
 var _controllers: Dictionary = {}
 # Slug => [Ability].
@@ -97,6 +98,22 @@ static var _units: Dictionary = {}
 
 static func get_unit(id_p: int) -> Unit:
 	return _units.get(id_p)
+
+
+class Movement:
+	var velocity: Vector3
+	var rotation: Vector3
+
+	func _init(v: Vector3, r: Vector3) -> void:
+		velocity = v
+		rotation = r
+
+	func is_zero() -> bool:
+		return velocity == Vector3.ZERO and rotation == Vector3.ZERO
+
+
+func get_agent() -> Agent:
+	return _agent
 
 
 func get_radius() -> float:
@@ -432,8 +449,10 @@ func _ready() -> void:
 	_units[id] = self
 
 	floor_constant_speed = true
-	safe_margin = 0.1
+	safe_margin = 0.01
 	_ui.label = label
+	_agent = resource.agent.agent_scene.instantiate()
+	add_child(_agent)
 
 	_controller_spawner.set_spawn_function(_spawn_controller)
 	_controller_spawner.despawned.connect(_despawn_controller)
@@ -467,7 +486,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	var prevoius_impulse := _impulse
 	var collided := move_and_slide()
-	velocity = _impulse + _get_ability_velocity(delta)
+	var ability_movement := _get_ability_movement(delta)
+	if ability_movement != null:
+		velocity = _impulse + ability_movement.velocity
+		rotation.y = atan2(ability_movement.rotation.x, ability_movement.rotation.z)
+	else:
+		velocity = _impulse
 
 	# Don't fly up if hit a wall or something.
 	if collided and _impulse.y > 0:
@@ -498,13 +522,13 @@ func _physics_process(delta: float) -> void:
 
 # Only one ability is allowed to move unit at a time. Ability that was added earlier will
 # have priority.
-func _get_ability_velocity(delta: float) -> Vector3:
+func _get_ability_movement(delta: float) -> Movement:
 	for a: Ability in _abilities.values():
-		var v := a.get_unit_velocity(delta)
-		if v != Vector3.ZERO:
-			return v
+		var m := a.process_movement(delta)
+		if m != null and !m.is_zero():
+			return m
 
-	return Vector3.ZERO
+	return null
 
 
 func _spawn_controller(key: PackedInt32Array) -> Controller:
