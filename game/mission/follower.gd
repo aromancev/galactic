@@ -16,7 +16,9 @@ var target_margin: float = 1
 # most of the time navigation mesh is floating some distance above the ground.
 var height_offset: float = 0.5
 # How often the follow path should be recaltulated.
-var compute_timeout: float = 0.3
+var compute_timeout: float = 0.5
+
+var is_debug: bool = false
 
 var _subject: Node3D
 var _target: Node3D
@@ -24,6 +26,7 @@ var _path_index: int = 0
 var _path: PackedVector3Array
 # Time since last path computation. If negative, will calculate path immediately.
 var _since_compute: float = -1
+var _debug_line: Line3D
 
 
 func _init(subject: Node3D) -> void:
@@ -44,6 +47,9 @@ func reset() -> void:
 	_target = null
 	_path = []
 	_path_index = 0
+	if _debug_line:
+		_debug_line.queue_free()
+		_debug_line = null
 
 
 func is_navigation_finished() -> bool:
@@ -101,3 +107,16 @@ func _compute_path(delta: float) -> void:
 		map, _subject.global_position, _target.global_position, true
 	)
 	_path_index = 1
+
+	if _debug_line:
+		_debug_line.queue_free()
+		_debug_line = null
+
+	if is_debug:
+		_debug_line = Line3D.new(_path, Color.RED, true)
+		_subject.get_tree().get_root().add_child(_debug_line)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and _debug_line:
+		_debug_line.queue_free()

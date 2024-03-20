@@ -152,6 +152,7 @@ func get_allies() -> Array:
 	return allies
 
 
+# Can be used to kick Unit in a certain direction with certain speed.
 func add_impulse(delta: Vector3) -> void:
 	if !is_multiplayer_authority():
 		return
@@ -174,6 +175,12 @@ func add_impulse(delta: Vector3) -> void:
 
 	_position_sync = position
 	_impulse_sync = _impulse
+
+
+# Can be used to manipulate Units velocity in the next physics frame. Usful for pushing Unit away
+# from another Unit, for example.
+func add_frame_velocity(delta: Vector3) -> void:
+	velocity += delta
 
 
 func teleport(pos: Vector3) -> void:
@@ -219,7 +226,7 @@ func get_ability(slug: String) -> AbilityResource:
 	if !ability:
 		return null
 
-	return ability.resource.duplicate(true)
+	return ability.resource.duplicate()
 
 
 # Returns all unit abilities in the form: slug => [AbilityResource].
@@ -227,7 +234,7 @@ func get_abilities() -> Dictionary:
 	var abils := {}
 	for slug: String in _abilities:
 		var a: Ability = _abilities[slug]
-		abils[slug] = a.resource.duplicate(true)
+		abils[slug] = a.resource.duplicate()
 	return abils
 
 
@@ -424,6 +431,8 @@ func _ready() -> void:
 	id = _id_iterator
 	_units[id] = self
 
+	floor_constant_speed = true
+	safe_margin = 0.1
 	_ui.label = label
 
 	_controller_spawner.set_spawn_function(_spawn_controller)
@@ -457,8 +466,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var prevoius_impulse := _impulse
-	velocity = _impulse + _get_ability_velocity(delta)
 	var collided := move_and_slide()
+	velocity = _impulse + _get_ability_velocity(delta)
 
 	# Don't fly up if hit a wall or something.
 	if collided and _impulse.y > 0:
@@ -559,7 +568,7 @@ func _spawn_ability(slug_id: int) -> Ability:
 
 	_abilities[slug] = ability
 
-	ability_added.emit(res.duplicate(true))
+	ability_added.emit(res.duplicate())
 	return ability
 
 
@@ -579,7 +588,7 @@ func _remove_ability(slug: String) -> void:
 	if !ability:
 		return
 
-	ability_removed.emit(ability.resource.duplicate(true))
+	ability_removed.emit(ability.resource.duplicate())
 	_abilities.erase(slug)
 	ability.queue_free()
 	for order: Order in _orders.get_children():
@@ -681,7 +690,7 @@ func _spawn_order(args: Array) -> Order:
 	order.set_script(ability.resource.order.order_script)
 	order.is_preparing = false
 	order.ability_slug = ability_slug
-	order.ability = ability.resource.duplicate(true)
+	order.ability = ability.resource.duplicate()
 	order.target = target
 	if last_order:
 		order.unit_position = last_order.get_next_unit_position()

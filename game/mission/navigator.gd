@@ -14,10 +14,13 @@ var margin: float = 0.2
 # most of the time navigation mesh is floating some distance above the ground.
 var height_offset: float = 0.5
 
+var is_debug: bool = false
+
 var _subject: Node3D
 var _target: Variant
 var _path_index: int = 0
 var _path: PackedVector3Array
+var _debug_line: Line3D
 
 
 func _init(subject: Node3D) -> void:
@@ -37,6 +40,9 @@ func reset() -> void:
 	_path = []
 	_path_index = 0
 	_target = null
+	if _debug_line:
+		_debug_line.queue_free()
+		_debug_line = null
 
 
 # Returns direction for the unit to move towards the target avoiding obstacles.
@@ -70,3 +76,16 @@ func _compute_path() -> void:
 	var map := _subject.get_world_3d().get_navigation_map()
 	_path = NavigationServer3D.map_get_path(map, _subject.global_position, _target as Vector3, true)
 	_path_index = 1
+
+	if _debug_line:
+		_debug_line.queue_free()
+		_debug_line = null
+
+	if is_debug:
+		_debug_line = Line3D.new(_path, Color.RED, true)
+		_subject.get_tree().get_root().add_child(_debug_line)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and _debug_line:
+		_debug_line.queue_free()

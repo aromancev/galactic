@@ -136,10 +136,6 @@ ability_9={
 ]
 }
 
-[physics]
-
-3d/run_on_separate_thread=true
-
 [rendering]
 
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)
