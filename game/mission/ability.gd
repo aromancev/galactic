@@ -42,8 +42,8 @@ func terminate() -> void:
 
 
 # Called inside `_physics_process` so it is safe to use physics inside.
-func get_unit_velocity(_delta: float) -> Vector3:
-	return Vector3.ZERO
+func process_movement(_delta: float) -> Unit.Movement:
+	return null
 
 
 # Called before incrementing an attribute. Must return a new delta that should be propagated to the

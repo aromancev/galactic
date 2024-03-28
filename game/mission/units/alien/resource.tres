@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=10 format=3 uid="uid://cohk3iafuv3w6"]
+
+[ext_resource type="Resource" uid="uid://ci24yo7c78pcd" path="res://game/mission/abilities/navigate/resource.tres" id="1_8p7k0"]
+[ext_resource type="Resource" uid="uid://c2nugelt0bnee" path="res://game/mission/abilities/shoot/resource.tres" id="2_h8xyh"]
+[ext_resource type="Resource" uid="uid://bul437fgf1b2m" path="res://game/mission/abilities/follow/resource.tres" id="3_aljsg"]
+[ext_resource type="Resource" uid="uid://c3qdfg5dpb4ix" path="res://game/mission/abilities/melee/resource.tres" id="4_lxhom"]
+[ext_resource type="Resource" uid="uid://b1xteu50xwvtg" path="res://game/mission/abilities/run/resource.tres" id="5_8bmyh"]
+[ext_resource type="Resource" uid="uid://bwp1appmbhxb2" path="res://game/mission/attributes/health/resource.tres" id="6_2m4ji"]
+[ext_resource type="Resource" uid="uid://dkovrna8wiuif" path="res://game/mission/agents/alien/resource.tres" id="6_sr2nc"]
+[ext_resource type="Resource" uid="uid://cft7fsv7x1gv5" path="res://game/mission/attributes/speed/resource.tres" id="7_xby6i"]
+[ext_resource type="Script" path="res://game/mission/unit_resource.gd" id="8_ri4em"]
+
+[resource]
+script = ExtResource("8_ri4em")
+agent = ExtResource("6_sr2nc")
+abilities = Array[Resource("res://game/mission/ability_resource.gd")]([ExtResource("1_8p7k0"), ExtResource("2_h8xyh"), ExtResource("3_aljsg"), ExtResource("4_lxhom"), ExtResource("5_8bmyh")])
+attributes = Array[Resource("res://game/mission/attribute_resource.gd")]([ExtResource("6_2m4ji"), ExtResource("7_xby6i")])

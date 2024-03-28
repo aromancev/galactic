@@ -6,17 +6,25 @@ var _navigator: Navigator
 func use(target: Variant) -> void:
 	super(target)
 	_navigator.set_target(target as Vector3)
+	get_unit().get_agent().play("run")
 
 
-func get_unit_velocity(delta: float) -> Vector3:
+func process_movement(delta: float) -> Unit.Movement:
 	if !is_using() or !get_unit().is_on_floor():
-		return Vector3.ZERO
+		return null
 
-	return _navigator.get_direction(delta) * get_unit().get_attribute_value("speed")
+	var dir := _navigator.get_direction(delta)
+	return Unit.Movement.new(dir * get_unit().get_attribute_value("speed"), dir)
+
+
+func done() -> void:
+	super()
+	get_unit().get_agent().reset()
 
 
 func terminate() -> void:
 	_navigator.reset()
+	get_unit().get_agent().reset()
 	super()
 
 

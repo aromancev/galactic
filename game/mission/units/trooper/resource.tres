@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="UnitResource" load_steps=9 format=3 uid="uid://cspe3vmy6327s"]
+[gd_resource type="Resource" script_class="UnitResource" load_steps=10 format=3 uid="uid://cspe3vmy6327s"]
 
 [ext_resource type="Resource" uid="uid://ci24yo7c78pcd" path="res://game/mission/abilities/navigate/resource.tres" id="1_7lnm6"]
 [ext_resource type="Resource" uid="uid://c2nugelt0bnee" path="res://game/mission/abilities/shoot/resource.tres" id="2_30hc0"]
@@ -7,9 +7,11 @@
 [ext_resource type="Resource" uid="uid://bul437fgf1b2m" path="res://game/mission/abilities/follow/resource.tres" id="3_lfvm5"]
 [ext_resource type="Resource" uid="uid://c3qdfg5dpb4ix" path="res://game/mission/abilities/melee/resource.tres" id="4_vmjf3"]
 [ext_resource type="Resource" uid="uid://b1xteu50xwvtg" path="res://game/mission/abilities/run/resource.tres" id="5_cfrdv"]
+[ext_resource type="Resource" uid="uid://dsqs73kmym3eg" path="res://game/mission/agents/trooper/resource.tres" id="6_0pm6l"]
 [ext_resource type="Resource" uid="uid://cft7fsv7x1gv5" path="res://game/mission/attributes/speed/resource.tres" id="7_mmyxm"]
 
 [resource]
 script = ExtResource("2_km210")
+agent = ExtResource("6_0pm6l")
 abilities = Array[Resource("res://game/mission/ability_resource.gd")]([ExtResource("1_7lnm6"), ExtResource("2_30hc0"), ExtResource("3_lfvm5"), ExtResource("4_vmjf3"), ExtResource("5_cfrdv")])
 attributes = Array[Resource("res://game/mission/attribute_resource.gd")]([ExtResource("2_lxnkm"), ExtResource("7_mmyxm")])

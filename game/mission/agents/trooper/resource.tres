@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="AgentResource" load_steps=3 format=3 uid="uid://dsqs73kmym3eg"]
+
+[ext_resource type="PackedScene" uid="uid://dgavj4xgj65md" path="res://game/mission/agents/trooper/trooper.tscn" id="1_ab0di"]
+[ext_resource type="Script" path="res://game/mission/agent_resource.gd" id="1_looa5"]
+
+[resource]
+script = ExtResource("1_looa5")
+agent_scene = ExtResource("1_ab0di")

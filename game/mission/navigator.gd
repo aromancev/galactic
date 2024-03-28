@@ -27,6 +27,10 @@ func _init(subject: Node3D) -> void:
 	_subject = subject
 
 
+func get_target() -> Variant:
+	return _target
+
+
 func set_target(target: Vector3) -> void:
 	reset()
 	_target = target

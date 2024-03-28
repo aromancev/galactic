@@ -4,6 +4,7 @@ extends SluggedResource
 Represents all configuration resources that define a particular [Unit].
 """
 
+@export var agent: AgentResource
 @export var abilities: Array[AbilityResource]
 @export var attributes: Array[AttributeResource]
 

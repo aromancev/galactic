@@ -33,6 +33,10 @@ func _init(subject: Node3D) -> void:
 	_subject = subject
 
 
+func get_target() -> Node3D:
+	return _target
+
+
 func set_target(target: Node3D) -> void:
 	# Can't follow itself.
 	if _subject == target:
